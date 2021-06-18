@@ -7,12 +7,15 @@ import { reduceArray } from '../utils';
 
 export const DEFAULT_STATE_MAPPERS: MenuFormatters<any, MenuFilters<any>, any> = {
     stateToMenu: (state = {}, filters, menuType, groups) => {
-        const groupKeys = Object.values(groups);
+        const groupKeys = Object.values(groups || {});
         const allButtons = filters.reduce(reduceArray);
 
         const newButtons: KeyboardButton<any>[] = [];
 
         switch (menuType) {
+            case MenuType.MENU:
+                break;
+
             case MenuType.RANGE:
                 const rangeButtons = allButtons.filter((button) => {
                     return state.from === button.value.value || state.to === button.value.value;
@@ -51,6 +54,9 @@ export const DEFAULT_STATE_MAPPERS: MenuFormatters<any, MenuFilters<any>, any> =
         let newStateCheckbox: string[] = [];
 
         switch (menuType) {
+            case MenuType.MENU:
+                return menu[0].value;
+
             case MenuType.RANGE:
                 newState.from = menu[0].value;
                 newState.to = menu[1].value;

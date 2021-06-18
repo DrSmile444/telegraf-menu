@@ -183,6 +183,10 @@ export class KeyboardMenu<Ctx extends DefaultCtx = DefaultCtx, Group extends any
         ).map((button) => button.value);
 
         switch (this.config.type) {
+            case MenuType.MENU:
+                activeButtons = [activeButton];
+                break;
+
             case MenuType.RADIO:
                 activeButtons = activeButtons.filter((button) => button.group !== activeButton.group);
                 activeButtons.push(activeButton);
@@ -321,6 +325,8 @@ export class KeyboardMenu<Ctx extends DefaultCtx = DefaultCtx, Group extends any
             return deepEqual(activeButton, button.value);
         });
 
+        const label = ctx.i18n?.t(button.label) || button.label;
+
         switch (this.config.type) {
             case MenuType.RANGE:
                 const { activeButtonIndex, firstButtonIndex, lastButtonIndex } = this.getRangeButtonIndexes(button.value);
@@ -329,22 +335,25 @@ export class KeyboardMenu<Ctx extends DefaultCtx = DefaultCtx, Group extends any
                     !this.evenRange && activeButtonIndex === firstButtonIndex;
 
                 if (isCurrentButton) {
-                    return RANGE_FORMATTING.current + ' ' + ctx.i18n?.t(button.label);
+                    return RANGE_FORMATTING.current + ' ' + label;
                 }
 
                 return isActiveButton || isButtonInRange || isDefaultActiveButton ?
-                    RANGE_FORMATTING.active + ' ' + ctx.i18n?.t(button.label) :
-                    RANGE_FORMATTING.disabled + ' ' + ctx.i18n?.t(button.label);
+                    RANGE_FORMATTING.active + ' ' + label :
+                    RANGE_FORMATTING.disabled + ' ' + label;
 
             case MenuType.RADIO:
                 return isActiveButton || isDefaultActiveButton ?
-                    RADIO_FORMATTING.active + ' ' + ctx.i18n?.t(button.label) :
-                    RADIO_FORMATTING.disabled + ' ' + ctx.i18n?.t(button.label);
+                    RADIO_FORMATTING.active + ' ' + label :
+                    RADIO_FORMATTING.disabled + ' ' + label;
 
             case MenuType.CHECKBOX:
                 return isActiveButton ?
-                    CHECKBOX_FORMATTING.active + ' ' + ctx.i18n?.t(button.label) :
-                    CHECKBOX_FORMATTING.disabled + ' ' + ctx.i18n?.t(button.label);
+                    CHECKBOX_FORMATTING.active + ' ' + label :
+                    CHECKBOX_FORMATTING.disabled + ' ' + label;
+
+            case MenuType.MENU:
+                return label;
         }
     }
 }

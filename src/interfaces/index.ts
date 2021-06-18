@@ -5,6 +5,7 @@ import { KeyboardButton } from '../keyboard-button';
 import { KeyboardMenu } from '../keyboard-menu';
 
 export enum MenuType {
+    MENU = 'menu',
     RADIO = 'radio',
     CHECKBOX = 'checkbox',
     RANGE = 'range',
