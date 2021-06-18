@@ -21,12 +21,16 @@ export const DEFAULT_STATE_MAPPERS: MenuFormatters<any, MenuFilters<any>, any> =
                 break;
 
             case MenuType.CHECKBOX:
-                groupKeys.forEach((group) => {
-                    const checkboxButton = allButtons.filter((button) => {
-                        return button.value.group === group && state[group]?.some((item) => deepEqual(item, button.value.value));
-                    });
+                const currentState = Array.isArray(state)
+                    ? state
+                    : [];
+
+                if (currentState.length) {
+                    const checkboxButton = allButtons
+                        .filter((button) => currentState.includes(button.value.value));
+
                     newButtons.push(...checkboxButton);
-                });
+                }
                 break;
 
             case MenuType.RADIO:
@@ -44,6 +48,7 @@ export const DEFAULT_STATE_MAPPERS: MenuFormatters<any, MenuFilters<any>, any> =
     menuToState: (menu, menuType, groups ) => {
         const groupKeys = Object.values(groups);
         const newState: { [key: string]: any | any[] } = {};
+        let newStateCheckbox: string[] = [];
 
         switch (menuType) {
             case MenuType.RANGE:
@@ -52,11 +57,7 @@ export const DEFAULT_STATE_MAPPERS: MenuFormatters<any, MenuFilters<any>, any> =
                 break;
 
             case MenuType.CHECKBOX:
-                groupKeys.forEach((group) => {
-                   newState[group] = menu
-                       .filter((button) => button.group === group)
-                       .map((button) => button.value);
-                });
+                newStateCheckbox = menu.map((button) => button.value);
                 break;
 
             case MenuType.RADIO:
@@ -73,6 +74,8 @@ export const DEFAULT_STATE_MAPPERS: MenuFormatters<any, MenuFilters<any>, any> =
             }
         });
 
-        return newState;
+        return menuType === MenuType.CHECKBOX
+            ? newStateCheckbox
+            : newState;
     },
 };

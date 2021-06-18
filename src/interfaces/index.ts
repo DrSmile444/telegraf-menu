@@ -19,6 +19,7 @@ export interface MenuConfig<Group extends any = string, State extends object = o
     state?: State;
     debug?: boolean;
     menuGetter?(ctx: Ctx): KeyboardMenu;
+    menuSetter?(ctx: Ctx, menu: KeyboardMenu): any;
     onChange?(ctx: MenuContextUpdate<Ctx, Group>, state: State): any;
     onSubmit?(ctx: MenuContextUpdate<Ctx, Group>, state: State): any;
     onSubmitUpdater?(ctx: MenuContextUpdate<Ctx, Group>, messageId: number, state: State): any;

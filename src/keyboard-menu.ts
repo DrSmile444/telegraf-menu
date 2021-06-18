@@ -129,6 +129,8 @@ export class KeyboardMenu<Ctx extends DefaultCtx = DefaultCtx, Group extends any
 
         const sentMessage = await ctx.reply(message, this.getKeyboard());
         this.messageId = sentMessage.message_id;
+
+        this.config.menuSetter?.(ctx, this);
     }
 
     private onAction(ctx: MenuContextUpdate<Ctx, Group>) {
