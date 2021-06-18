@@ -263,7 +263,7 @@ export class KeyboardMenu<Ctx extends DefaultCtx = DefaultCtx, Group extends any
             });
         });
 
-        if (this.config.onSubmit) {
+        if (this.config.onSubmit || this.config.submitMessage || this.config.onSubmitUpdater) {
             const shortButton = KeyboardMenu.remapFullToCompact({
                 action: this.config.action,
                 payload: { group: '_local', value: '_submit' },
