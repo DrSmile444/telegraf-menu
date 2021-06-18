@@ -118,13 +118,30 @@ export class KeyboardMenu<Ctx extends DefaultCtx = DefaultCtx, Group extends any
         const { chatId } = getCtxInfo(ctx as any);
         ctx.telegram.sendChatAction(chatId, 'typing');
 
+        const sendMessage = async () => {
+            const sentMessage = await ctx.reply(this.getMessage(ctx), this.getKeyboard(ctx));
+            this.messageId = sentMessage.message_id;
+        };
+
         const oldMenu = this.config.menuGetter(ctx);
-        if (oldMenu?.messageId && !oldMenu.deleted) {
+
+        const isReplacingMenu = oldMenu?.config?.replaceWithNextMenu && !oldMenu?.deleted && oldMenu?.messageId !== this.messageId;
+        const isNotDeletedMenu = oldMenu?.messageId && !oldMenu.deleted;
+
+        if (!isReplacingMenu && isNotDeletedMenu) {
             ctx.deleteMessage(oldMenu.messageId).catch(() => {});
         }
 
-        const sentMessage = await ctx.reply(this.getMessage(ctx), this.getKeyboard(ctx));
-        this.messageId = sentMessage.message_id;
+        if (isReplacingMenu && oldMenu.onAction) {
+            await ctx.editMessageText(this.getMessage(ctx), this.getKeyboard(ctx))
+                .then(() => this.messageId = oldMenu.messageId)
+                .catch(async () => {
+                    oldMenu.deleted = true;
+                    await sendMessage();
+                });
+        } else {
+            await sendMessage();
+        }
 
         this.config.menuSetter?.(ctx, this);
     }
@@ -164,7 +181,7 @@ export class KeyboardMenu<Ctx extends DefaultCtx = DefaultCtx, Group extends any
 
             if (this.config.onSubmitUpdater) {
                 this.config.onSubmitUpdater(ctx, messageId, this.state);
-            } else {
+            } else if (!this.config.replaceWithNextMenu) {
                 ctx.deleteMessage(messageId).catch(() => {});
             }
             return;

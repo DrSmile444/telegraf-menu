@@ -20,6 +20,7 @@ export interface MenuConfig<Group extends any = string, State extends any = any,
     groups: object;
     state?: State;
     debug?: boolean;
+    replaceWithNextMenu?: boolean;
     menuGetter?(ctx: Ctx): KeyboardMenu;
     menuSetter?(ctx: Ctx, menu: KeyboardMenu): any;
     onChange?(ctx: MenuContextUpdate<Ctx, Group>, state: State): any;
