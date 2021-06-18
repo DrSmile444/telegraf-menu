@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "declaration": true,
+    "experimentalDecorators": true,
+    "lib": ["es2017", "dom"],
+    "types": ["reflect-metadata", "node", "jest"],
+    "module": "commonjs",
+    "outDir": "dist",
+    "removeComments": true,
+    "resolveJsonModule": true,
+    "sourceMap": true,
+    "suppressImplicitAnyIndexErrors": true,
+    "target": "es5",
+    "emitDecoratorMetadata": true,
+    "paths": {
+      "*": ["node_modules/*", "src/modules/bot/types/*"]
+    }
+  },
+  "exclude": ["node_modules", "dist"],
+  "include": ["src/**/*", "src/locales/*.json"]
+}
