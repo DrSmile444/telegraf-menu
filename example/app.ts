@@ -1,3 +1,5 @@
+import { I18n } from '@edjopato/telegraf-i18n';
+import * as path from 'path';
 import { Telegraf } from 'telegraf';
 import * as LocalSession from 'telegraf-session-local';
 
@@ -11,8 +13,15 @@ require('dotenv').config();
 
 const bot = new Telegraf(process.env.BOT_TOKEN);
 const session = new LocalSession({ database: 'local.db.json' });
+const i18n = new I18n({
+    defaultLanguage: 'en',
+    directory: path.resolve(__dirname, 'locales'),
+    useSession: true,
+    sessionName: 'session',
+});
 
 bot.use(session.middleware());
+bot.use(i18n.middleware());
 bot.use(initSession);
 bot.use(parseCallbackData);
 

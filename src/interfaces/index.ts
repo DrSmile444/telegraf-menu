@@ -2,6 +2,7 @@ import { Context, NarrowedContext } from 'telegraf';
 
 import { KeyboardButton } from '../keyboard-button';
 import { KeyboardMenu } from '../keyboard-menu';
+import { I18n, TemplateData } from '@edjopato/telegraf-i18n';
 
 export enum MenuType {
     RADIO = 'radio',
@@ -62,7 +63,14 @@ export interface MenuOptionPayloadShort<Group extends any = string> {
     d?: 1 | 0;
 }
 
-export type DefaultCtx = NarrowedContext<Context<any> & { match: RegExpExecArray; }, any>;
+export type I18nOverride = I18n & {
+    locale(languageCode: string): void;
+    t(resourceKey: string, templateData?: Readonly<TemplateData>): string;
+};
+
+export type DefaultCtx = NarrowedContext<Context<any> & { match: RegExpExecArray; }, any> & {
+    i18n?: I18nOverride;
+};
 
 export type MenuContextUpdate<Ctx extends DefaultCtx = DefaultCtx, Group = string> = {
     state: {

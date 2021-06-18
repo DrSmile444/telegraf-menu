@@ -1,0 +1,6 @@
+{
+  "menu.basket.start": "(Checkbox) Here's your shopping basket! Select fruits to add!",
+  "menu.basket.submit": "Throw to basket!",
+  "menu.videoFilters.start": "(Range) Here's your videos filters! Select date range to videos show.",
+  "menu.videoFilters.submit": "Save range"
+}

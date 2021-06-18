@@ -1,4 +1,4 @@
-import { DefaultCtx, KeyboardMenu } from '../../src';
+import { DefaultCtx, I18nOverride, KeyboardMenu } from '../../src';
 
 export enum VideoFilterType {
     FROM = 'from',
@@ -19,6 +19,7 @@ export interface Basket {
 }
 
 export type CurrentCtx = DefaultCtx & {
+    i18n: I18nOverride;
     session: {
         videoFilters: {
             from: string;

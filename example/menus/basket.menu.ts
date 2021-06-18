@@ -6,7 +6,8 @@ export const initBasketMenu = (ctx: CurrentCtx) => {
     new KeyboardMenu<CurrentCtx, FruitsFilterType, Basket['fruit']>(
         {
             action: 'basket',
-            message: 'Test keyboard',
+            message: 'menu.basket.start',
+            submitMessage: 'menu.basket.submit',
             type: MenuType.CHECKBOX,
             filters: FRUITS_FILTERS,
             groups: VideoFilterType,
