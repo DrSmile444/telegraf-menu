@@ -1,0 +1,8 @@
+{
+  "menu.basket.start": "(Checkbox) Тут ваш кошик! Оберіть які фрукти додати!",
+  "menu.basket.submit": "Вкинути в кошик!",
+  "menu.videoFilters.start": "(Range) Тут ваші видео-фільтри! Оберіть диапазон дат для відео.",
+  "menu.videoFilters.submit": "Зберегти діапазон",
+  "menu.language.start": "(Radio) Оберіть мову для бота",
+  "menu.language.submit": "Виглядає чудово!"
+}

@@ -1,8 +1,11 @@
+import { I18nContext } from '@edjopato/telegraf-i18n';
+
 import { DefaultCtx, I18nOverride, KeyboardMenu } from '../../src';
 
 export enum MenuAction {
     BASKET = 'basket',
     VIDEO_FILTERS = 'video_filters',
+    LANGUAGE = 'language',
 }
 
 export enum VideoFilterType {
@@ -12,6 +15,12 @@ export enum VideoFilterType {
 
 export enum FruitsFilterType {
     FRUIT = 'fruit',
+}
+
+export enum LanguageType {
+    EN = 'en',
+    RU = 'ru',
+    UA = 'ua',
 }
 
 export interface VideoFilters {
@@ -24,12 +33,13 @@ export interface Basket {
 }
 
 export type CurrentCtx = DefaultCtx & {
-    i18n: I18nOverride;
+    i18n: I18nContext;
     session: {
         videoFilters: {
             from: string;
             to: string;
         },
+        language: LanguageType,
         basket: Basket;
         keyboardMenu: KeyboardMenu,
     },

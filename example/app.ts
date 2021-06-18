@@ -5,7 +5,7 @@ import * as LocalSession from 'telegraf-session-local';
 
 import { KeyboardMenu, parseCallbackData } from '../src';
 import { CurrentCtx, MenuAction } from './interfaces';
-import { initBasketMenu, initVideoFiltersMenu } from './menus';
+import { initBasketMenu, initLanguageMenu, initVideoFiltersMenu } from './menus';
 import { initSession } from './middlewares';
 
 require('dotenv').config();
@@ -29,6 +29,12 @@ bot.command(MenuAction.BASKET, initBasketMenu);
 bot.action(new RegExp(MenuAction.BASKET), KeyboardMenu.onAction(
     (ctx: CurrentCtx) => ctx.session.keyboardMenu,
     initBasketMenu,
+));
+
+bot.command(MenuAction.LANGUAGE, initLanguageMenu);
+bot.action(new RegExp(MenuAction.LANGUAGE), KeyboardMenu.onAction(
+    (ctx: CurrentCtx) => ctx.session.keyboardMenu,
+    initLanguageMenu,
 ));
 
 bot.command(MenuAction.VIDEO_FILTERS, initVideoFiltersMenu);

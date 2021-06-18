@@ -1,5 +1,5 @@
 import { KeyboardButton, MenuOptionPayload } from '../../src';
-import { FruitsFilterType, VideoFilterType } from '../interfaces';
+import { FruitsFilterType, LanguageType, VideoFilterType } from '../interfaces';
 
 export const VIDEO_FILTERS: KeyboardButton<MenuOptionPayload<VideoFilterType>>[][] = [
     [
@@ -21,5 +21,13 @@ export const FRUITS_FILTERS: KeyboardButton<MenuOptionPayload<FruitsFilterType>>
         new KeyboardButton('🍋 Limes', { group: FruitsFilterType.FRUIT, value: 'limes' }),
         new KeyboardButton('🍌 Bananas', { group: FruitsFilterType.FRUIT, value: 'banana' }),
         new KeyboardButton('🍓 Strawberries', { group: FruitsFilterType.FRUIT, value: 'strawberries' }),
+    ],
+];
+
+export const LANGUAGE_FILTERS: KeyboardButton<MenuOptionPayload<'language'>>[][] = [
+    [
+        new KeyboardButton(LanguageType.EN, { group: 'language', value: LanguageType.EN, default: true }),
+        new KeyboardButton(LanguageType.RU, { group: 'language', value: LanguageType.RU }),
+        new KeyboardButton(LanguageType.UA, { group: 'language', value: LanguageType.UA }),
     ],
 ];
