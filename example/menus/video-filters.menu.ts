@@ -1,11 +1,11 @@
 import { KeyboardMenu, MenuType } from '../../src';
 import { VIDEO_FILTERS } from '../const';
-import { CurrentCtx, VideoFilters, VideoFilterType } from '../interfaces';
+import { CurrentCtx, MenuAction, VideoFilters, VideoFilterType } from '../interfaces';
 
 export const initVideoFiltersMenu = (ctx: CurrentCtx) => {
     new KeyboardMenu<CurrentCtx, VideoFilterType, VideoFilters>(
         {
-            action: 'videoFiltersRadio',
+            action: MenuAction.VIDEO_FILTERS,
             message: 'menu.videoFilters.start',
             submitMessage: 'menu.videoFilters.submit',
             type: MenuType.RANGE,

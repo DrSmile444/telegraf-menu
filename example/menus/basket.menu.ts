@@ -1,11 +1,11 @@
 import { KeyboardMenu, MenuType } from '../../src';
 import { FRUITS_FILTERS } from '../const';
-import { Basket, CurrentCtx, FruitsFilterType, VideoFilterType } from '../interfaces';
+import { Basket, CurrentCtx, FruitsFilterType, MenuAction, VideoFilterType } from '../interfaces';
 
 export const initBasketMenu = (ctx: CurrentCtx) => {
     new KeyboardMenu<CurrentCtx, FruitsFilterType, Basket['fruit']>(
         {
-            action: 'basket',
+            action: MenuAction.BASKET,
             message: 'menu.basket.start',
             submitMessage: 'menu.basket.submit',
             type: MenuType.CHECKBOX,

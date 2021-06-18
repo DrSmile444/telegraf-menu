@@ -1,5 +1,10 @@
 import { DefaultCtx, I18nOverride, KeyboardMenu } from '../../src';
 
+export enum MenuAction {
+    BASKET = 'basket',
+    VIDEO_FILTERS = 'video_filters',
+}
+
 export enum VideoFilterType {
     FROM = 'from',
     TO = 'to',

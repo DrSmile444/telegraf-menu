@@ -4,7 +4,7 @@ import { Telegraf } from 'telegraf';
 import * as LocalSession from 'telegraf-session-local';
 
 import { KeyboardMenu, parseCallbackData } from '../src';
-import { CurrentCtx } from './interfaces';
+import { CurrentCtx, MenuAction } from './interfaces';
 import { initBasketMenu, initVideoFiltersMenu } from './menus';
 import { initSession } from './middlewares';
 
@@ -25,14 +25,14 @@ bot.use(i18n.middleware());
 bot.use(initSession);
 bot.use(parseCallbackData);
 
-bot.command('basket', initBasketMenu);
-bot.action(/basket/, KeyboardMenu.onAction(
+bot.command(MenuAction.BASKET, initBasketMenu);
+bot.action(new RegExp(MenuAction.BASKET), KeyboardMenu.onAction(
     (ctx: CurrentCtx) => ctx.session.keyboardMenu,
     initBasketMenu,
 ));
 
-bot.command('video_filters', initVideoFiltersMenu);
-bot.action(/videoFiltersRadio/, KeyboardMenu.onAction(
+bot.command(MenuAction.VIDEO_FILTERS, initVideoFiltersMenu);
+bot.action(new RegExp(MenuAction.VIDEO_FILTERS), KeyboardMenu.onAction(
     (ctx: CurrentCtx) => ctx.session.keyboardMenu,
     initVideoFiltersMenu,
 ));
