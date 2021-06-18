@@ -21,7 +21,7 @@ import { DEFAULT_STATE_MAPPERS } from './mappers';
 import { getCtxInfo, reduceArray } from './utils';
 
 
-export class KeyboardMenu<Ctx extends DefaultCtx = DefaultCtx, Group extends any = any, State extends object = any> {
+export class KeyboardMenu<Ctx extends DefaultCtx = DefaultCtx, Group extends any = any, State extends any = any> {
     get state$() {
         return this._state$
             .asObservable()
@@ -159,7 +159,7 @@ export class KeyboardMenu<Ctx extends DefaultCtx = DefaultCtx, Group extends any
 
         const payload = ctx.state.callbackData?.payload;
         if (payload?.group === '_local' && payload?.value === '_submit') {
-            this.config.onSubmit(ctx, this.state);
+            this.config.onSubmit?.(ctx, this.state);
             this.deleted = true;
 
             if (this.config.onSubmitUpdater) {
@@ -234,6 +234,7 @@ export class KeyboardMenu<Ctx extends DefaultCtx = DefaultCtx, Group extends any
         this._state$.next(newState);
         this.state = newState;
         this.evenRange = !this.evenRange;
+        this.config.beforeChange?.(ctx as any, this.state);
 
         this.redrawMenu(ctx);
     }

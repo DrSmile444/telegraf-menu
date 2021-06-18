@@ -1,8 +1,8 @@
+import { I18n, I18nContext, TemplateData } from '@edjopato/telegraf-i18n';
 import { Context, NarrowedContext } from 'telegraf';
 
 import { KeyboardButton } from '../keyboard-button';
 import { KeyboardMenu } from '../keyboard-menu';
-import { I18n, TemplateData } from '@edjopato/telegraf-i18n';
 
 export enum MenuType {
     RADIO = 'radio',
@@ -10,7 +10,7 @@ export enum MenuType {
     RANGE = 'range',
 }
 
-export interface MenuConfig<Group extends any = string, State extends object = object, Ctx extends DefaultCtx = DefaultCtx> {
+export interface MenuConfig<Group extends any = string, State extends any = any, Ctx extends DefaultCtx = DefaultCtx> {
     action: string;
     type: MenuType;
     message: string;
@@ -22,13 +22,14 @@ export interface MenuConfig<Group extends any = string, State extends object = o
     menuGetter?(ctx: Ctx): KeyboardMenu;
     menuSetter?(ctx: Ctx, menu: KeyboardMenu): any;
     onChange?(ctx: MenuContextUpdate<Ctx, Group>, state: State): any;
+    beforeChange?(changeCtx: MenuContextUpdate<Ctx, Group>, state: State): any;
     onSubmit?(ctx: MenuContextUpdate<Ctx, Group>, state: State): any;
     onSubmitUpdater?(ctx: MenuContextUpdate<Ctx, Group>, messageId: number, state: State): any;
 }
 
 export type MenuFilters<Group extends any = string> = KeyboardButton<MenuOptionPayload<Group>>[][];
 
-export interface MenuFormatters<State extends object, Filters extends any[][], Group> {
+export interface MenuFormatters<State extends any, Filters extends any[][], Group> {
     stateToMenu(state: State, filters: Filters, type: MenuType, groups: object): Filters[0];
     menuToState(menu: MenuOptionPayload<Group>[], type: MenuType, groups: object): State;
 }
@@ -69,7 +70,7 @@ export type I18nOverride = I18n & {
 };
 
 export type DefaultCtx = NarrowedContext<Context<any> & { match: RegExpExecArray; }, any> & {
-    i18n?: I18nOverride;
+    i18n?: I18nContext;
 };
 
 export type MenuContextUpdate<Ctx extends DefaultCtx = DefaultCtx, Group = string> = {
