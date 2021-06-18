@@ -13,6 +13,7 @@ export const initStartMenu = (ctx: CurrentCtx) => {
             type: MenuType.MENU,
             filters: START_MENU_FILTERS,
             groups: {},
+            replaceWithNextMenu: true,
             menuGetter: (menuCtx: CurrentCtx) => menuCtx.session.keyboardMenu,
             menuSetter: (menuCtx: CurrentCtx, menu: KeyboardMenu) => menuCtx.session.keyboardMenu = menu,
             onChange(changeCtx, state): any {
