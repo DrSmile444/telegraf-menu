@@ -23,20 +23,32 @@ const i18n = new I18n({
 bot.use(session.middleware());
 bot.use(i18n.middleware());
 bot.use(initSession);
+/**
+ * Required callback parser
+ * */
 bot.use(parseCallbackData);
 
+/**
+ * Checkbox example
+ * */
 bot.command(MenuAction.BASKET, initBasketMenu);
 bot.action(new RegExp(MenuAction.BASKET), KeyboardMenu.onAction(
     (ctx: CurrentCtx) => ctx.session.keyboardMenu,
     initBasketMenu,
 ));
 
+/**
+ * Radio example
+ * */
 bot.command(MenuAction.LANGUAGE, initLanguageMenu);
 bot.action(new RegExp(MenuAction.LANGUAGE), KeyboardMenu.onAction(
     (ctx: CurrentCtx) => ctx.session.keyboardMenu,
     initLanguageMenu,
 ));
 
+/**
+ * Range example
+ * */
 bot.command(MenuAction.VIDEO_FILTERS, initVideoFiltersMenu);
 bot.action(new RegExp(MenuAction.VIDEO_FILTERS), KeyboardMenu.onAction(
     (ctx: CurrentCtx) => ctx.session.keyboardMenu,
