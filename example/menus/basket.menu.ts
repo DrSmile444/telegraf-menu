@@ -1,6 +1,7 @@
 import { KeyboardMenu, MenuType } from '../../src';
 import { FRUITS_FILTERS } from '../const';
 import { Basket, CurrentCtx, FruitsFilterType, MenuAction, VideoFilterType } from '../interfaces';
+import { initStartMenu } from './start.menu';
 
 export const initBasketMenu = (ctx: CurrentCtx) => {
     new KeyboardMenu<CurrentCtx, FruitsFilterType, Basket['fruit']>(
@@ -16,11 +17,8 @@ export const initBasketMenu = (ctx: CurrentCtx) => {
             menuGetter: (menuCtx: CurrentCtx) => menuCtx.session.keyboardMenu,
             menuSetter: (menuCtx: CurrentCtx, menu: KeyboardMenu) => menuCtx.session.keyboardMenu = menu,
             onSubmit(changeCtx, state): any {
-                changeCtx.reply('submit:' + JSON.stringify(state));
                 changeCtx.session.basket[FruitsFilterType.FRUIT] = state;
-            },
-            onSubmitUpdater(changeCtx): any {
-                changeCtx.editMessageText('Test after submit');
+                initStartMenu(changeCtx);
             },
         },
     ).sendMenu(ctx);

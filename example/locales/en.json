@@ -1,4 +1,8 @@
 {
+  "menu.start.start": "Welcome to telegraf-menu example project!\nSelect the next menu.",
+  "menu.start.button.basket": "\uD83E\uDDFA Basket",
+  "menu.start.button.videoFilters": "\uD83D\uDCFC Video Filters",
+  "menu.start.button.language": "\uD83C\uDF0E Language",
   "menu.basket.start": "(Checkbox) Here's your shopping basket! Select fruits to add!",
   "menu.basket.submit": "Throw to basket!",
   "menu.videoFilters.start": "(Range) Here's your videos filters! Select date range to videos show.",

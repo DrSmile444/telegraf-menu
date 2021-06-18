@@ -1,6 +1,7 @@
 import { KeyboardMenu, MenuType } from '../../src';
 import { VIDEO_FILTERS } from '../const';
 import { CurrentCtx, MenuAction, VideoFilters, VideoFilterType } from '../interfaces';
+import { initStartMenu } from './start.menu';
 
 export const initVideoFiltersMenu = (ctx: CurrentCtx) => {
     new KeyboardMenu<CurrentCtx, VideoFilterType, VideoFilters>(
@@ -16,11 +17,8 @@ export const initVideoFiltersMenu = (ctx: CurrentCtx) => {
             menuGetter: (menuCtx: CurrentCtx) => menuCtx.session.keyboardMenu,
             menuSetter: (menuCtx: CurrentCtx, menu: KeyboardMenu) => menuCtx.session.keyboardMenu = menu,
             onSubmit(changeCtx, state): any {
-                changeCtx.reply('submit:' + JSON.stringify(state));
                 changeCtx.session.videoFilters = state;
-            },
-            onSubmitUpdater(changeCtx): any {
-                changeCtx.editMessageText('Test after submit');
+                initStartMenu(changeCtx);
             },
         },
     ).sendMenu(ctx);

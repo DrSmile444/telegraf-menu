@@ -1,6 +1,7 @@
 import { KeyboardMenu, MenuContextUpdate, MenuType } from '../../src';
 import { LANGUAGE_FILTERS } from '../const';
 import { CurrentCtx, LanguageType, MenuAction } from '../interfaces';
+import { initStartMenu } from './start.menu';
 
 export const initLanguageMenu = (ctx: CurrentCtx) => {
     new KeyboardMenu<CurrentCtx, any, { 'language': LanguageType }>(
@@ -18,8 +19,8 @@ export const initLanguageMenu = (ctx: CurrentCtx) => {
                 changeCtx.session.language = state.language;
                 changeCtx.i18n.locale(state.language);
             },
-            onSubmitUpdater(changeCtx): any {
-                changeCtx.editMessageText('Test after submit');
+            onSubmit(submitCtx: MenuContextUpdate<CurrentCtx, any>, state: { language: LanguageType }): any {
+                initStartMenu(submitCtx);
             },
         },
     ).sendMenu(ctx);

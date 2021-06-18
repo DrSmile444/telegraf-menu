@@ -5,7 +5,7 @@ import * as LocalSession from 'telegraf-session-local';
 
 import { KeyboardMenu, parseCallbackData } from '../src';
 import { CurrentCtx, MenuAction } from './interfaces';
-import { initBasketMenu, initLanguageMenu, initVideoFiltersMenu } from './menus';
+import { initBasketMenu, initLanguageMenu, initStartMenu, initVideoFiltersMenu } from './menus';
 import { initSession } from './middlewares';
 
 require('dotenv').config();
@@ -27,6 +27,15 @@ bot.use(initSession);
  * Required callback parser
  * */
 bot.use(parseCallbackData);
+
+/**
+ * Menu example
+ * */
+bot.command(MenuAction.START, initStartMenu);
+bot.action(new RegExp(MenuAction.START), KeyboardMenu.onAction(
+    (ctx: CurrentCtx) => ctx.session.keyboardMenu,
+    initStartMenu,
+));
 
 /**
  * Checkbox example

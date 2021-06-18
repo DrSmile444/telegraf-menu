@@ -6,6 +6,7 @@ export enum MenuAction {
     BASKET = 'basket',
     VIDEO_FILTERS = 'video_filters',
     LANGUAGE = 'language',
+    START = 'start',
 }
 
 export enum VideoFilterType {
