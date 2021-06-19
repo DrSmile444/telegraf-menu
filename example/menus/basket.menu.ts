@@ -11,7 +11,6 @@ export const initBasketMenu = (ctx: CurrentCtx) => {
             submitMessage: 'menu.basket.submit',
             type: MenuType.CHECKBOX,
             filters: FRUITS_FILTERS,
-            groups: VideoFilterType,
             state: ctx.session.basket?.[FruitsFilterType.FRUIT],
             debug: true,
             replaceWithNextMenu: true,

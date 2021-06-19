@@ -11,7 +11,6 @@ export const initVideoFiltersMenu = (ctx: CurrentCtx) => {
             submitMessage: 'menu.videoFilters.submit',
             type: MenuType.RANGE,
             filters: VIDEO_FILTERS,
-            groups: VideoFilterType,
             state: ctx.session.videoFilters,
             debug: true,
             replaceWithNextMenu: true,

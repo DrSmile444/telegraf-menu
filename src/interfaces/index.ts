@@ -11,13 +11,12 @@ export enum MenuType {
     RANGE = 'range',
 }
 
-export interface MenuConfig<Group extends any = string, State extends any = any, Ctx extends DefaultCtx = DefaultCtx> {
+export interface MenuConfig<Group extends string = string, State extends any = any, Ctx extends DefaultCtx = DefaultCtx> {
     action: string;
     type: MenuType;
     message: string;
     submitMessage?: string;
     filters: MenuFilters<Group>;
-    groups: object;
     state?: State;
     debug?: boolean;
     replaceWithNextMenu?: boolean;
@@ -32,8 +31,8 @@ export interface MenuConfig<Group extends any = string, State extends any = any,
 export type MenuFilters<Group extends any = string> = KeyboardButton<MenuOptionPayload<Group>>[][];
 
 export interface MenuFormatters<State extends any, Filters extends any[][], Group> {
-    stateToMenu(state: State, filters: Filters, type: MenuType, groups: object): Filters[0];
-    menuToState(menu: MenuOptionPayload<Group>[], type: MenuType, groups: object): State;
+    stateToMenu(state: State, filters: Filters, type: MenuType, groups: string[]): Filters[0];
+    menuToState(menu: MenuOptionPayload<Group>[], type: MenuType, groups: string[]): State;
 }
 
 /**

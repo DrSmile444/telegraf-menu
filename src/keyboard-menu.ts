@@ -21,7 +21,7 @@ import { DEFAULT_STATE_MAPPERS } from './mappers';
 import { getCtxInfo, reduceArray } from './utils';
 
 
-export class KeyboardMenu<Ctx extends DefaultCtx = DefaultCtx, Group extends any = any, State extends any = any> {
+export class KeyboardMenu<Ctx extends DefaultCtx = DefaultCtx, Group extends string = any, State extends any = any> {
     get state$() {
         return this._state$
             .asObservable()
@@ -31,6 +31,7 @@ export class KeyboardMenu<Ctx extends DefaultCtx = DefaultCtx, Group extends any
     messageId: number;
     state: State;
 
+    private groups: string[];
     private activeButtons: MenuOptionPayload<Group>[] = [];
     private deleted: boolean = false;
     private evenRange: boolean = false;
@@ -93,6 +94,7 @@ export class KeyboardMenu<Ctx extends DefaultCtx = DefaultCtx, Group extends any
         private config: MenuConfig<Group, State, Ctx>,
         private stateMappers: MenuFormatters<State, MenuFilters<Group>, Group> = DEFAULT_STATE_MAPPERS,
     ) {
+        this.groups = this.config.filters.reduce(reduceArray).map((filter) => filter.value.group);
         if (config.state) {
             this.updateState(config.state);
         }
@@ -103,7 +105,7 @@ export class KeyboardMenu<Ctx extends DefaultCtx = DefaultCtx, Group extends any
             state,
             this.config.filters,
             this.config.type,
-            this.config.groups,
+            this.groups,
         ).map((button) => button.value);
 
         this._state$.next(state);
@@ -196,7 +198,7 @@ export class KeyboardMenu<Ctx extends DefaultCtx = DefaultCtx, Group extends any
             this.state,
             this.config.filters,
             this.config.type,
-            this.config.groups,
+            this.groups,
         ).map((button) => button.value);
 
         switch (this.config.type) {
@@ -250,7 +252,7 @@ export class KeyboardMenu<Ctx extends DefaultCtx = DefaultCtx, Group extends any
                 break;
         }
 
-        const newState = this.stateMappers.menuToState(activeButtons, this.config.type, this.config.groups);
+        const newState = this.stateMappers.menuToState(activeButtons, this.config.type, this.groups);
         this.activeButtons = activeButtons;
         this._state$.next(newState);
         this.state = newState;
