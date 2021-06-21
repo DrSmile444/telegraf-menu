@@ -1,7 +1,9 @@
 import { I18n } from '@edjopato/telegraf-i18n';
+import * as fs from 'fs';
 import * as path from 'path';
 import { Telegraf } from 'telegraf';
 import * as LocalSession from 'telegraf-session-local';
+import * as util from 'util';
 
 import { KeyboardMenu, parseCallbackData } from '../src';
 import { CurrentCtx, MenuAction } from './interfaces';
@@ -9,6 +11,14 @@ import { initBasketMenu, initLanguageMenu, initStartMenu, initVideoFiltersMenu }
 import { initSession } from './middlewares';
 
 require('dotenv').config();
+
+const log_file = fs.createWriteStream(__dirname + '/debug.log', {flags : 'w'});
+const log_stdout = process.stdout;
+
+console.log = (d) => {
+    log_file.write(util.format(d) + '\n');
+    log_stdout.write(util.format(d) + '\n');
+};
 
 
 const bot = new Telegraf(process.env.BOT_TOKEN);
@@ -20,6 +30,7 @@ const i18n = new I18n({
     sessionName: 'session',
 });
 
+bot.use(Telegraf.log((log) => console.log('>>> Telegraf "' + new Date().toString() + '" :' + log)));
 bot.use(session.middleware());
 bot.use(i18n.middleware());
 bot.use(initSession);

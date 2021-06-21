@@ -123,6 +123,12 @@ export class KeyboardMenu<Ctx extends DefaultCtx = DefaultCtx, Group extends str
         const sendMessage = async () => {
             const sentMessage = await ctx.reply(this.getMessage(ctx), this.getKeyboard(ctx));
             this.messageId = sentMessage.message_id;
+
+            if (this.config.debug) {
+                await ctx.telegram.editMessageText(chatId, this.messageId, null, this.getMessage(ctx), this.getKeyboard(ctx)).catch((e) => {
+                    console.error(e);
+                });
+            }
         };
 
         const oldMenu = this.config.menuGetter(ctx);
@@ -135,8 +141,8 @@ export class KeyboardMenu<Ctx extends DefaultCtx = DefaultCtx, Group extends str
         }
 
         if (isReplacingMenu && oldMenu.onAction) {
-            await ctx.editMessageText(this.getMessage(ctx), this.getKeyboard(ctx))
-                .then(() => this.messageId = oldMenu.messageId)
+            this.messageId = oldMenu.messageId;
+            await ctx.telegram.editMessageText(chatId, this.messageId, null, this.getMessage(ctx), this.getKeyboard(ctx))
                 .catch(async () => {
                     oldMenu.deleted = true;
                     await sendMessage();
@@ -150,7 +156,7 @@ export class KeyboardMenu<Ctx extends DefaultCtx = DefaultCtx, Group extends str
 
     private get debugMessage() {
         return !!this.config.debug ?
-            '\n\n• Debug: ' + JSON.stringify(this.state) :
+            '\n\n• Debug: ' + JSON.stringify(this.state) + '\n• Message ID: ' + this.messageId :
             '';
     }
 
