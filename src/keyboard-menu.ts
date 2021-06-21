@@ -22,6 +22,9 @@ import { getCtxInfo, reduceArray } from './utils';
 
 
 export class KeyboardMenu<Ctx extends DefaultCtx = DefaultCtx, Group extends string = any, State extends any = any> {
+    /**
+     * RXJS Observable with state changes
+     * */
     get state$() {
         return this._state$
             .asObservable()
@@ -38,10 +41,10 @@ export class KeyboardMenu<Ctx extends DefaultCtx = DefaultCtx, Group extends str
     state: State;
     replaced: boolean = false;
 
-    private groups: string[];
     private activeButtons: MenuOptionPayload<Group>[] = [];
     private deleted: boolean = false;
     private evenRange: boolean = false;
+    private readonly groups: string[];
     private readonly _state$: BehaviorSubject<State> = new BehaviorSubject<State>(null);
 
     static remapCompactToFull<SGroup>(options: MenuOptionShort<SGroup>): MenuOption<SGroup> {
@@ -78,6 +81,9 @@ export class KeyboardMenu<Ctx extends DefaultCtx = DefaultCtx, Group extends str
         return newOption;
     }
 
+    /**
+     * Uses as action handler on callback query
+     * */
     static onAction<Ctx extends DefaultCtx = DefaultCtx>(
         menuGetter: (ctx: Ctx) => KeyboardMenu,
         initMenu: (ctx: Ctx) => any,
@@ -107,6 +113,9 @@ export class KeyboardMenu<Ctx extends DefaultCtx = DefaultCtx, Group extends str
         }
     }
 
+    /**
+     * Updates and redraws the state
+     * */
     updateState(state: State, ctx?: Ctx) {
         this.activeButtons = this.stateMappers.stateToMenu(
             state,
@@ -123,6 +132,10 @@ export class KeyboardMenu<Ctx extends DefaultCtx = DefaultCtx, Group extends str
         }
     }
 
+    /**
+     * After creating the menu instance, send it.
+     * Redraws the old menu
+     * */
     async sendMenu(ctx: Ctx) {
         const { chatId } = getCtxInfo(ctx as any);
         ctx.telegram.sendChatAction(chatId, 'typing');
@@ -270,9 +283,16 @@ export class KeyboardMenu<Ctx extends DefaultCtx = DefaultCtx, Group extends str
         this.redrawMenu(ctx);
     }
 
+    /**
+     * Redraw current menu with new buttons.
+     * Updates message and keyboard.
+     * */
     private redrawMenu(ctx: Ctx) {
         const { chatId } = getCtxInfo(ctx as any);
 
+        /**
+         * Replaced flag sets after the call, so we need to delay it
+         * */
         setTimeout(() => {
             if (this.replaced) {
                 return;
@@ -293,6 +313,9 @@ export class KeyboardMenu<Ctx extends DefaultCtx = DefaultCtx, Group extends str
         });
     }
 
+    /**
+     * Formats and creates keyboard buttons from the config
+     * */
     private getKeyboard(ctx: Ctx) {
         const buttons = this.config.filters.map((row) => {
             return row.map((button) => {
@@ -319,6 +342,10 @@ export class KeyboardMenu<Ctx extends DefaultCtx = DefaultCtx, Group extends str
         return Markup.inlineKeyboard(buttons);
     }
 
+    /**
+     * Returns active, first, and last button indexes and these buttons.
+     * Suitable only for radio menus.
+     * */
     private getRangeButtonIndexes(currentButton: MenuOptionPayload<Group>) {
         const allButtons = this.config.filters.reduce(reduceArray);
         const firstButton = this.activeButtons[0];
@@ -352,6 +379,9 @@ export class KeyboardMenu<Ctx extends DefaultCtx = DefaultCtx, Group extends str
         };
     }
 
+    /**
+     * Creates the label depending on button state and menu type.
+     * */
     private formatButtonLabel(ctx: Ctx, button: KeyboardButton<MenuOptionPayload<Group>>) {
         const { CHECKBOX_FORMATTING, RADIO_FORMATTING, RANGE_FORMATTING } = FORMATTING_EMOJIS;
 
