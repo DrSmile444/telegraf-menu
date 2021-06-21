@@ -28,8 +28,15 @@ export class KeyboardMenu<Ctx extends DefaultCtx = DefaultCtx, Group extends str
             .pipe(skip(1));
     }
 
+    private get debugMessage() {
+        return !!this.config.debug ?
+            '\n\n• Debug: ' + JSON.stringify(this.state) + '\n• Message ID: ' + this.messageId :
+            '';
+    }
+
     messageId: number;
     state: State;
+    replaced: boolean = false;
 
     private groups: string[];
     private activeButtons: MenuOptionPayload<Group>[] = [];
@@ -123,41 +130,36 @@ export class KeyboardMenu<Ctx extends DefaultCtx = DefaultCtx, Group extends str
         const sendMessage = async () => {
             const sentMessage = await ctx.reply(this.getMessage(ctx), this.getKeyboard(ctx));
             this.messageId = sentMessage.message_id;
-
-            if (this.config.debug) {
-                await ctx.telegram.editMessageText(chatId, this.messageId, null, this.getMessage(ctx), this.getKeyboard(ctx)).catch((e) => {
-                    console.error(e);
-                });
-            }
         };
 
         const oldMenu = this.config.menuGetter(ctx);
-
         const isReplacingMenu = oldMenu?.config?.replaceWithNextMenu && !oldMenu?.deleted && oldMenu?.messageId !== this.messageId;
-        const isNotDeletedMenu = oldMenu?.messageId && !oldMenu.deleted;
-
-        if (!isReplacingMenu && isNotDeletedMenu) {
-            ctx.deleteMessage(oldMenu.messageId).catch(() => {});
-        }
+        oldMenu.replaced = true;
 
         if (isReplacingMenu && oldMenu.onAction) {
             this.messageId = oldMenu.messageId;
-            await ctx.telegram.editMessageText(chatId, this.messageId, null, this.getMessage(ctx), this.getKeyboard(ctx))
+                ctx.telegram.editMessageText(
+                    chatId,
+                    this.messageId,
+                    null,
+                    this.getMessage(ctx),
+                    this.getKeyboard(ctx),
+                )
+                .then(() => {
+                    if (this.config.debug) {
+                        console.log('sendMenu', this.config.action);
+                    }
+                })
                 .catch(async () => {
                     oldMenu.deleted = true;
                     await sendMessage();
                 });
         } else {
+            ctx.deleteMessage(this.messageId).catch(() => {});
             await sendMessage();
         }
 
         this.config.menuSetter?.(ctx, this);
-    }
-
-    private get debugMessage() {
-        return !!this.config.debug ?
-            '\n\n• Debug: ' + JSON.stringify(this.state) + '\n• Message ID: ' + this.messageId :
-            '';
     }
 
     private getMessage(ctx: Ctx) {
@@ -271,13 +273,24 @@ export class KeyboardMenu<Ctx extends DefaultCtx = DefaultCtx, Group extends str
     private redrawMenu(ctx: Ctx) {
         const { chatId } = getCtxInfo(ctx as any);
 
-        if (this.messageId) {
+        setTimeout(() => {
+            if (this.replaced) {
+                return;
+            }
+
+            if (this.messageId) {
                 ctx.telegram
                     .editMessageText(chatId, this.messageId, null, this.getMessage(ctx), this.getKeyboard(ctx))
+                    .then(() => {
+                        if (this.config.debug) {
+                            console.log('redraw', this.config.action);
+                        }
+                    })
                     .catch((e) => {
                         console.log(e);
                     });
-        }
+            }
+        });
     }
 
     private getKeyboard(ctx: Ctx) {
