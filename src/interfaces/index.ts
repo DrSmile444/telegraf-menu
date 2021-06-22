@@ -1,8 +1,8 @@
 import { I18n, I18nContext, TemplateData } from '@edjopato/telegraf-i18n';
 import { Context, NarrowedContext } from 'telegraf';
 
-import { KeyboardButton } from '../keyboard-button';
 import { GenericMenu } from '../generic-menu';
+import { KeyboardButton } from '../keyboard-button';
 
 
 export interface MenuConfig<Group extends string = string, State extends any = any, Ctx extends DefaultCtx = DefaultCtx> {

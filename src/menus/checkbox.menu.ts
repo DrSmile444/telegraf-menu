@@ -2,9 +2,9 @@
 import * as deepEqual from 'deep-equal';
 
 import { FORMATTING_EMOJIS } from '../const';
+import { GenericMenu } from '../generic-menu';
 import { MenuConfig, MenuFilters, MenuFormatters, MenuOptionPayload } from '../interfaces';
 import { KeyboardButton } from '../keyboard-button';
-import { GenericMenu } from '../generic-menu';
 import { reduceArray } from '../utils';
 
 

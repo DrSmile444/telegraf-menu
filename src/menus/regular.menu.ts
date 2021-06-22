@@ -1,9 +1,9 @@
 // @ts-ignore
 import * as deepEqual from 'deep-equal';
 
+import { GenericMenu } from '../generic-menu';
 import { MenuConfig, MenuFilters, MenuFormatters, MenuOptionPayload } from '../interfaces';
 import { KeyboardButton } from '../keyboard-button';
-import { GenericMenu } from '../generic-menu';
 
 
 export class RegularMenu<Ctx, State, Group> extends GenericMenu<any> {
