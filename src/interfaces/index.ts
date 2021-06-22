@@ -13,7 +13,6 @@ export enum MenuType {
 
 export interface MenuConfig<Group extends string = string, State extends any = any, Ctx extends DefaultCtx = DefaultCtx> {
     action: string;
-    type: MenuType;
     message: string;
     submitMessage?: string;
     filters: MenuFilters<Group>;
@@ -31,8 +30,8 @@ export interface MenuConfig<Group extends string = string, State extends any = a
 export type MenuFilters<Group extends any = string> = KeyboardButton<MenuOptionPayload<Group>>[][];
 
 export interface MenuFormatters<State extends any, Filters extends any[][], Group> {
-    stateToMenu(state: State, filters: Filters, type: MenuType, groups: string[]): Filters[0];
-    menuToState(menu: MenuOptionPayload<Group>[], type: MenuType, groups: string[]): State;
+    stateToMenu?(state: State, filters: Filters, groups: string[]): Filters[0];
+    menuToState?(menu: MenuOptionPayload<Group>[], groups: string[]): State;
 }
 
 /**

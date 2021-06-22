@@ -4,7 +4,6 @@ import { BehaviorSubject } from 'rxjs';
 import { skip } from 'rxjs/operators';
 import { Markup } from 'telegraf';
 
-import { FORMATTING_EMOJIS } from './const';
 import {
     DefaultCtx,
     MenuConfig,
@@ -14,14 +13,12 @@ import {
     MenuOption,
     MenuOptionPayload,
     MenuOptionShort,
-    MenuType,
 } from './interfaces';
 import { KeyboardButton } from './keyboard-button';
-import { DEFAULT_STATE_MAPPERS } from './mappers';
 import { getCtxInfo, reduceArray } from './utils';
 
 
-export class KeyboardMenu<Ctx extends DefaultCtx = DefaultCtx, Group extends string = any, State extends any = any> {
+export abstract class KeyboardMenu<Ctx extends DefaultCtx = DefaultCtx, Group extends string = any, State extends any = any> {
     /**
      * RXJS Observable with state changes
      * */
@@ -32,7 +29,7 @@ export class KeyboardMenu<Ctx extends DefaultCtx = DefaultCtx, Group extends str
     }
 
     private get debugMessage() {
-        return !!this.config.debug ?
+        return !!this.genericConfig.debug ?
             '\n\n• Debug: ' + JSON.stringify(this.state) + '\n• Message ID: ' + this.messageId :
             '';
     }
@@ -41,10 +38,10 @@ export class KeyboardMenu<Ctx extends DefaultCtx = DefaultCtx, Group extends str
     state: State;
     replaced: boolean = false;
 
-    private activeButtons: MenuOptionPayload<Group>[] = [];
+    protected readonly groups: string[];
+    protected activeButtons: MenuOptionPayload<Group>[] = [];
+    protected evenRange: boolean = false;
     private deleted: boolean = false;
-    private evenRange: boolean = false;
-    private readonly groups: string[];
     private readonly _state$: BehaviorSubject<State> = new BehaviorSubject<State>(null);
 
     static remapCompactToFull<SGroup>(options: MenuOptionShort<SGroup>): MenuOption<SGroup> {
@@ -104,23 +101,28 @@ export class KeyboardMenu<Ctx extends DefaultCtx = DefaultCtx, Group extends str
     }
 
     constructor(
-        private config: MenuConfig<Group, State, Ctx>,
-        private stateMappers: MenuFormatters<State, MenuFilters<Group>, Group> = DEFAULT_STATE_MAPPERS,
+        private genericConfig: MenuConfig<Group, State, Ctx>,
+        private genericStateMappers: MenuFormatters<State, MenuFilters<Group>, Group>,
     ) {
-        this.groups = this.config.filters.reduce(reduceArray).map((filter) => filter.value.group);
-        if (config.state) {
-            this.updateState(config.state);
+        this.groups = this.genericConfig.filters.reduce(reduceArray).map((filter) => filter.value.group);
+        if (genericConfig.state) {
+            this.updateState(genericConfig.state);
         }
     }
+
+    abstract onActiveButton(ctx: Ctx, activeButton: MenuOptionPayload<Group>);
+    abstract formatButtonLabel(ctx: Ctx, button: KeyboardButton<MenuOptionPayload<Group>>);
+    abstract stateToMenu(state: any, filters, groups);
+    abstract menuToState(menu, groups);
 
     /**
      * Updates and redraws the state
      * */
     updateState(state: State, ctx?: Ctx) {
-        this.activeButtons = this.stateMappers.stateToMenu(
+        const stateToMenu = this.genericStateMappers?.stateToMenu || this.stateToMenu;
+        this.activeButtons = stateToMenu(
             state,
-            this.config.filters,
-            this.config.type,
+            this.genericConfig.filters,
             this.groups,
         ).map((button) => button.value);
 
@@ -145,8 +147,8 @@ export class KeyboardMenu<Ctx extends DefaultCtx = DefaultCtx, Group extends str
             this.messageId = sentMessage.message_id;
         };
 
-        const oldMenu = this.config.menuGetter(ctx);
-        const isReplacingMenu = oldMenu?.config?.replaceWithNextMenu && !oldMenu?.deleted && oldMenu?.messageId !== this.messageId;
+        const oldMenu = this.genericConfig.menuGetter(ctx);
+        const isReplacingMenu = oldMenu?.genericConfig?.replaceWithNextMenu && !oldMenu?.deleted && oldMenu?.messageId !== this.messageId;
         oldMenu.replaced = true;
 
         if (isReplacingMenu && oldMenu.onAction) {
@@ -159,8 +161,8 @@ export class KeyboardMenu<Ctx extends DefaultCtx = DefaultCtx, Group extends str
                     this.getKeyboard(ctx),
                 )
                 .then(() => {
-                    if (this.config.debug) {
-                        console.log('sendMenu', this.config.action);
+                    if (this.genericConfig.debug) {
+                        console.log('sendMenu', this.genericConfig.action);
                     }
                 })
                 .catch(async () => {
@@ -172,16 +174,49 @@ export class KeyboardMenu<Ctx extends DefaultCtx = DefaultCtx, Group extends str
             await sendMessage();
         }
 
-        this.config.menuSetter?.(ctx, this);
+        this.genericConfig.menuSetter?.(ctx, this);
+    }
+
+    protected toggleActiveButton(ctx: Ctx, activeButtons: MenuOptionPayload<Group>[]) {
+        const menuToState = this.genericStateMappers.menuToState || this.menuToState;
+        const newState = menuToState(activeButtons, this.groups);
+        this.activeButtons = activeButtons;
+        this._state$.next(newState);
+        this.state = newState;
+        this.evenRange = !this.evenRange;
+        this.genericConfig.beforeChange?.(ctx as any, this.state);
+
+        this.redrawMenu(ctx);
+    }
+
+    /**
+     * Creates the label depending on button state and menu type.
+     * */
+    protected getButtonLabelInfo(ctx: Ctx, button: KeyboardButton<MenuOptionPayload<Group>>) {
+        const isDefaultActiveButton = this.activeButtons
+            .filter((activeButton) => activeButton.group === button.value.group)
+            .length === 0 && !!button.value.default;
+
+        const isActiveButton = this.activeButtons.some((activeButton) => {
+            return deepEqual(activeButton, button.value);
+        });
+
+        const label = ctx.i18n?.t(button.label) || button.label;
+
+        return {
+            label,
+            isActiveButton,
+            isDefaultActiveButton,
+        };
     }
 
     private getMessage(ctx: Ctx) {
-        const message = ctx.i18n?.t(this.config.message) || this.config.message;
+        const message = ctx.i18n?.t(this.genericConfig.message) || this.genericConfig.message;
         return message + this.debugMessage;
     }
 
     private getSubmitMessage(ctx: Ctx) {
-        return ctx.i18n?.t(this.config.submitMessage) || 'Submit';
+        return ctx.i18n?.t(this.genericConfig.submitMessage) || 'Submit';
     }
 
     private onAction(ctx: MenuContextUpdate<Ctx, Group>) {
@@ -199,88 +234,19 @@ export class KeyboardMenu<Ctx extends DefaultCtx = DefaultCtx, Group extends str
 
         const payload = ctx.state.callbackData?.payload;
         if (payload?.group === '_local' && payload?.value === '_submit') {
-            this.config.onSubmit?.(ctx, this.state);
+            this.genericConfig.onSubmit?.(ctx, this.state);
             this.deleted = true;
 
-            if (this.config.onSubmitUpdater) {
-                this.config.onSubmitUpdater(ctx, messageId, this.state);
-            } else if (!this.config.replaceWithNextMenu) {
+            if (this.genericConfig.onSubmitUpdater) {
+                this.genericConfig.onSubmitUpdater(ctx, messageId, this.state);
+            } else if (!this.genericConfig.replaceWithNextMenu) {
                 ctx.deleteMessage(messageId).catch(() => {});
             }
             return;
         }
 
-        this.toggleActiveButton(ctx as any, ctx.state.callbackData.payload as any);
-        this.config.onChange?.(ctx, this.state);
-    }
-
-    private toggleActiveButton(ctx: Ctx, activeButton: MenuOptionPayload<Group>) {
-        let activeButtons = this.stateMappers.stateToMenu(
-            this.state,
-            this.config.filters,
-            this.config.type,
-            this.groups,
-        ).map((button) => button.value);
-
-        switch (this.config.type) {
-            case MenuType.MENU:
-                activeButtons = [activeButton];
-                break;
-
-            case MenuType.RADIO:
-                activeButtons = activeButtons.filter((button) => button.group !== activeButton.group);
-                activeButtons.push(activeButton);
-                break;
-
-            case MenuType.RANGE:
-                const {
-                    activeButtonIndex,
-                    firstButtonIndex,
-                    lastButtonIndex,
-                    firstButton,
-                    lastButton,
-                } = this.getRangeButtonIndexes(activeButton);
-
-                activeButtons = this.evenRange
-                    ? [firstButton, activeButton]
-                    : [activeButton, lastButton];
-                activeButtons = activeButtons.filter(Boolean);
-
-                if (this.evenRange && activeButtonIndex < firstButtonIndex || !this.evenRange && activeButtonIndex > lastButtonIndex) {
-                    activeButtons = activeButtons.reverse();
-                    this.evenRange = !this.evenRange;
-                }
-
-                break;
-
-            case MenuType.CHECKBOX:
-                let buttonIndex = null;
-
-                activeButtons.some((button, index) => {
-                    const isButtonInList = deepEqual(button, activeButton);
-
-                    if (isButtonInList) {
-                        buttonIndex = index;
-                        return true;
-                    }
-                });
-
-                if (buttonIndex || buttonIndex === 0) {
-                    activeButtons.splice(buttonIndex, 1);
-                } else {
-                    activeButtons.push(activeButton);
-                }
-                break;
-        }
-
-        const newState = this.stateMappers.menuToState(activeButtons, this.config.type, this.groups);
-        this.activeButtons = activeButtons;
-        this._state$.next(newState);
-        this.state = newState;
-        this.evenRange = !this.evenRange;
-        this.config.beforeChange?.(ctx as any, this.state);
-
-        this.redrawMenu(ctx);
+        this.onActiveButton(ctx as any, ctx.state.callbackData.payload);
+        this.genericConfig.onChange?.(ctx, this.state);
     }
 
     /**
@@ -302,8 +268,8 @@ export class KeyboardMenu<Ctx extends DefaultCtx = DefaultCtx, Group extends str
                 ctx.telegram
                     .editMessageText(chatId, this.messageId, null, this.getMessage(ctx), this.getKeyboard(ctx))
                     .then(() => {
-                        if (this.config.debug) {
-                            console.log('redraw', this.config.action);
+                        if (this.genericConfig.debug) {
+                            console.log('redraw', this.genericConfig.action);
                         }
                     })
                     .catch((e) => {
@@ -317,10 +283,10 @@ export class KeyboardMenu<Ctx extends DefaultCtx = DefaultCtx, Group extends str
      * Formats and creates keyboard buttons from the config
      * */
     private getKeyboard(ctx: Ctx) {
-        const buttons = this.config.filters.map((row) => {
+        const buttons = this.genericConfig.filters.map((row) => {
             return row.map((button) => {
                 const shortButton = KeyboardMenu.remapFullToCompact({
-                    action: this.config.action,
+                    action: this.genericConfig.action,
                     payload: button.value,
                 });
 
@@ -328,9 +294,9 @@ export class KeyboardMenu<Ctx extends DefaultCtx = DefaultCtx, Group extends str
             });
         });
 
-        if (this.config.onSubmit || this.config.submitMessage || this.config.onSubmitUpdater) {
+        if (this.genericConfig.onSubmit || this.genericConfig.submitMessage || this.genericConfig.onSubmitUpdater) {
             const shortButton = KeyboardMenu.remapFullToCompact({
-                action: this.config.action,
+                action: this.genericConfig.action,
                 payload: { group: '_local', value: '_submit' },
             });
 
@@ -340,88 +306,5 @@ export class KeyboardMenu<Ctx extends DefaultCtx = DefaultCtx, Group extends str
         }
 
         return Markup.inlineKeyboard(buttons);
-    }
-
-    /**
-     * Returns active, first, and last button indexes and these buttons.
-     * Suitable only for radio menus.
-     * */
-    private getRangeButtonIndexes(currentButton: MenuOptionPayload<Group>) {
-        const allButtons = this.config.filters.reduce(reduceArray);
-        const firstButton = this.activeButtons[0];
-        const lastButton = this.activeButtons[1];
-
-        const firstDefault = allButtons.findIndex((button) => !!button.value.default);
-
-        const activeButtonIndex = allButtons
-            .findIndex((button) => button.value.value === currentButton.value);
-
-        const firstButtonIndex = allButtons
-            .findIndex((button) => {
-                return firstButton
-                    ? button.value.value === firstButton.value
-                    : !!button.value.default;
-            });
-
-        const lastButtonIndex = allButtons
-            .findIndex((button, index) => {
-                return lastButton
-                    ? button.value.value === lastButton.value
-                    : !!button.value.default && firstDefault !== index;
-            });
-
-        return {
-            firstButton: firstButton || allButtons[firstButtonIndex].value,
-            lastButton : lastButton || allButtons[lastButtonIndex].value,
-            activeButtonIndex,
-            firstButtonIndex,
-            lastButtonIndex,
-        };
-    }
-
-    /**
-     * Creates the label depending on button state and menu type.
-     * */
-    private formatButtonLabel(ctx: Ctx, button: KeyboardButton<MenuOptionPayload<Group>>) {
-        const { CHECKBOX_FORMATTING, RADIO_FORMATTING, RANGE_FORMATTING } = FORMATTING_EMOJIS;
-
-        const isDefaultActiveButton = this.activeButtons
-            .filter((activeButton) => activeButton.group === button.value.group)
-            .length === 0 && !!button.value.default;
-
-        const isActiveButton = this.activeButtons.some((activeButton) => {
-            return deepEqual(activeButton, button.value);
-        });
-
-        const label = ctx.i18n?.t(button.label) || button.label;
-
-        switch (this.config.type) {
-            case MenuType.RANGE:
-                const { activeButtonIndex, firstButtonIndex, lastButtonIndex } = this.getRangeButtonIndexes(button.value);
-                const isButtonInRange = activeButtonIndex >= firstButtonIndex && activeButtonIndex <= lastButtonIndex;
-                const isCurrentButton = this.evenRange && activeButtonIndex === lastButtonIndex ||
-                    !this.evenRange && activeButtonIndex === firstButtonIndex;
-
-                if (isCurrentButton) {
-                    return RANGE_FORMATTING.current + ' ' + label;
-                }
-
-                return isActiveButton || isButtonInRange || isDefaultActiveButton ?
-                    RANGE_FORMATTING.active + ' ' + label :
-                    RANGE_FORMATTING.disabled + ' ' + label;
-
-            case MenuType.RADIO:
-                return isActiveButton || isDefaultActiveButton ?
-                    RADIO_FORMATTING.active + ' ' + label :
-                    RADIO_FORMATTING.disabled + ' ' + label;
-
-            case MenuType.CHECKBOX:
-                return isActiveButton ?
-                    CHECKBOX_FORMATTING.active + ' ' + label :
-                    CHECKBOX_FORMATTING.disabled + ' ' + label;
-
-            case MenuType.MENU:
-                return label;
-        }
     }
 }

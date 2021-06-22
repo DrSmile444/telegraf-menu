@@ -1,15 +1,14 @@
-import { KeyboardMenu, MenuContextUpdate, MenuType } from '../../src';
+import { KeyboardMenu, MenuContextUpdate, RadioMenu } from '../../src';
 import { LANGUAGE_FILTERS } from '../const';
 import { CurrentCtx, LanguageType, MenuAction } from '../interfaces';
 import { initStartMenu } from './start.menu';
 
 export const initLanguageMenu = (ctx: CurrentCtx) => {
-    new KeyboardMenu<CurrentCtx, any, { 'language': LanguageType }>(
+    new RadioMenu<CurrentCtx, any, { 'language': LanguageType }>(
         {
             action: MenuAction.LANGUAGE,
             message: 'menu.language.start',
             submitMessage: 'menu.language.submit',
-            type: MenuType.RADIO,
             filters: LANGUAGE_FILTERS,
             state: { language: ctx.session.language },
             debug: true,

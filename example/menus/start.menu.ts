@@ -1,4 +1,4 @@
-import { KeyboardMenu, MenuType } from '../../src';
+import { KeyboardMenu, RegularMenu } from '../../src';
 import { START_MENU_FILTERS } from '../const';
 import { CurrentCtx, MenuAction } from '../interfaces';
 import { initBasketMenu } from './basket.menu';
@@ -6,11 +6,10 @@ import { initLanguageMenu } from './language.menu';
 import { initVideoFiltersMenu } from './video-filters.menu';
 
 export const initStartMenu = (ctx: CurrentCtx) => {
-    new KeyboardMenu<CurrentCtx, any, MenuAction>(
+    new RegularMenu<CurrentCtx, any, MenuAction>(
         {
             action: MenuAction.START,
             message: 'menu.start.start',
-            type: MenuType.MENU,
             filters: START_MENU_FILTERS,
             replaceWithNextMenu: true,
             debug: true,
