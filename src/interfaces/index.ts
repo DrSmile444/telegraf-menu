@@ -4,12 +4,6 @@ import { Context, NarrowedContext } from 'telegraf';
 import { KeyboardButton } from '../keyboard-button';
 import { GenericMenu } from '../generic-menu';
 
-export enum MenuType {
-    MENU = 'menu',
-    RADIO = 'radio',
-    CHECKBOX = 'checkbox',
-    RANGE = 'range',
-}
 
 export interface MenuConfig<Group extends string = string, State extends any = any, Ctx extends DefaultCtx = DefaultCtx> {
     action: string;
