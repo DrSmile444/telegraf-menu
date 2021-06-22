@@ -1,4 +1,4 @@
-import { KeyboardMenu } from '../../src';
+import { GenericMenu } from '../../src';
 import { CheckboxMenu } from '../../src/menus/checkbox.menu';
 import { FRUITS_FILTERS } from '../const';
 import { Basket, CurrentCtx, FruitsFilterType, MenuAction } from '../interfaces';
@@ -15,7 +15,7 @@ export const initBasketMenu = (ctx: CurrentCtx) => {
             debug: true,
             replaceWithNextMenu: true,
             menuGetter: (menuCtx: CurrentCtx) => menuCtx.session.keyboardMenu,
-            menuSetter: (menuCtx: CurrentCtx, menu: KeyboardMenu) => menuCtx.session.keyboardMenu = menu,
+            menuSetter: (menuCtx: CurrentCtx, menu: GenericMenu) => menuCtx.session.keyboardMenu = menu,
             onSubmit(changeCtx, state): any {
                 changeCtx.session.basket[FruitsFilterType.FRUIT] = state;
                 initStartMenu(changeCtx);

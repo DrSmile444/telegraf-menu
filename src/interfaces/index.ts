@@ -2,7 +2,7 @@ import { I18n, I18nContext, TemplateData } from '@edjopato/telegraf-i18n';
 import { Context, NarrowedContext } from 'telegraf';
 
 import { KeyboardButton } from '../keyboard-button';
-import { KeyboardMenu } from '../keyboard-menu';
+import { GenericMenu } from '../generic-menu';
 
 export enum MenuType {
     MENU = 'menu',
@@ -19,8 +19,8 @@ export interface MenuConfig<Group extends string = string, State extends any = a
     state?: State;
     debug?: boolean;
     replaceWithNextMenu?: boolean;
-    menuGetter?(ctx: Ctx): KeyboardMenu;
-    menuSetter?(ctx: Ctx, menu: KeyboardMenu): any;
+    menuGetter?(ctx: Ctx): GenericMenu;
+    menuSetter?(ctx: Ctx, menu: GenericMenu): any;
     onChange?(ctx: MenuContextUpdate<Ctx, Group>, state: State): any;
     beforeChange?(changeCtx: MenuContextUpdate<Ctx, Group>, state: State): any;
     onSubmit?(ctx: MenuContextUpdate<Ctx, Group>, state: State): any;

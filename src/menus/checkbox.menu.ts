@@ -4,11 +4,11 @@ import * as deepEqual from 'deep-equal';
 import { FORMATTING_EMOJIS } from '../const';
 import { MenuConfig, MenuFilters, MenuFormatters, MenuOptionPayload } from '../interfaces';
 import { KeyboardButton } from '../keyboard-button';
-import { KeyboardMenu } from '../keyboard-menu';
+import { GenericMenu } from '../generic-menu';
 import { reduceArray } from '../utils';
 
 
-export class CheckboxMenu<Ctx, State, Group> extends KeyboardMenu<any> {
+export class CheckboxMenu<Ctx, State, Group> extends GenericMenu<any> {
     constructor(
         private config: MenuConfig<any, any, any>,
         private stateMappers: MenuFormatters<State, MenuFilters<Group>, Group> = {},

@@ -1,4 +1,4 @@
-import { KeyboardMenu, MenuContextUpdate, RadioMenu } from '../../src';
+import { GenericMenu, MenuContextUpdate, RadioMenu } from '../../src';
 import { LANGUAGE_FILTERS } from '../const';
 import { CurrentCtx, LanguageType, MenuAction } from '../interfaces';
 import { initStartMenu } from './start.menu';
@@ -14,7 +14,7 @@ export const initLanguageMenu = (ctx: CurrentCtx) => {
             debug: true,
             replaceWithNextMenu: true,
             menuGetter: (menuCtx: CurrentCtx) => menuCtx.session.keyboardMenu,
-            menuSetter: (menuCtx: CurrentCtx, menu: KeyboardMenu) => menuCtx.session.keyboardMenu = menu,
+            menuSetter: (menuCtx: CurrentCtx, menu: GenericMenu) => menuCtx.session.keyboardMenu = menu,
             beforeChange(changeCtx: MenuContextUpdate<CurrentCtx>, state): any {
                 changeCtx.session.language = state.language;
                 changeCtx.i18n.locale(state.language);

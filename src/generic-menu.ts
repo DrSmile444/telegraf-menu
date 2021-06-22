@@ -18,7 +18,7 @@ import { KeyboardButton } from './keyboard-button';
 import { getCtxInfo, reduceArray } from './utils';
 
 
-export abstract class KeyboardMenu<Ctx extends DefaultCtx = DefaultCtx, Group extends string = any, State extends any = any> {
+export abstract class GenericMenu<Ctx extends DefaultCtx = DefaultCtx, Group extends string = any, State extends any = any> {
     /**
      * RXJS Observable with state changes
      * */
@@ -82,7 +82,7 @@ export abstract class KeyboardMenu<Ctx extends DefaultCtx = DefaultCtx, Group ex
      * Uses as action handler on callback query
      * */
     static onAction<Ctx extends DefaultCtx = DefaultCtx>(
-        menuGetter: (ctx: Ctx) => KeyboardMenu,
+        menuGetter: (ctx: Ctx) => GenericMenu,
         initMenu: (ctx: Ctx) => any,
     ) {
         return (ctx: MenuContextUpdate<Ctx>) => {
@@ -285,7 +285,7 @@ export abstract class KeyboardMenu<Ctx extends DefaultCtx = DefaultCtx, Group ex
     private getKeyboard(ctx: Ctx) {
         const buttons = this.genericConfig.filters.map((row) => {
             return row.map((button) => {
-                const shortButton = KeyboardMenu.remapFullToCompact({
+                const shortButton = GenericMenu.remapFullToCompact({
                     action: this.genericConfig.action,
                     payload: button.value,
                 });
@@ -295,7 +295,7 @@ export abstract class KeyboardMenu<Ctx extends DefaultCtx = DefaultCtx, Group ex
         });
 
         if (this.genericConfig.onSubmit || this.genericConfig.submitMessage || this.genericConfig.onSubmitUpdater) {
-            const shortButton = KeyboardMenu.remapFullToCompact({
+            const shortButton = GenericMenu.remapFullToCompact({
                 action: this.genericConfig.action,
                 payload: { group: '_local', value: '_submit' },
             });

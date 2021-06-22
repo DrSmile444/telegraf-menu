@@ -1,4 +1,4 @@
-import { KeyboardMenu, RegularMenu } from '../../src';
+import { GenericMenu, RegularMenu } from '../../src';
 import { START_MENU_FILTERS } from '../const';
 import { CurrentCtx, MenuAction } from '../interfaces';
 import { initBasketMenu } from './basket.menu';
@@ -14,7 +14,7 @@ export const initStartMenu = (ctx: CurrentCtx) => {
             replaceWithNextMenu: true,
             debug: true,
             menuGetter: (menuCtx: CurrentCtx) => menuCtx.session.keyboardMenu,
-            menuSetter: (menuCtx: CurrentCtx, menu: KeyboardMenu) => menuCtx.session.keyboardMenu = menu,
+            menuSetter: (menuCtx: CurrentCtx, menu: GenericMenu) => menuCtx.session.keyboardMenu = menu,
             onChange(changeCtx, state): any {
                 switch (state) {
                     case MenuAction.BASKET:

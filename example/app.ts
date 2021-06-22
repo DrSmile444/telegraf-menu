@@ -3,7 +3,7 @@ import * as path from 'path';
 import { Telegraf } from 'telegraf';
 import * as LocalSession from 'telegraf-session-local';
 
-import { KeyboardMenu, parseCallbackData } from '../src';
+import { GenericMenu, parseCallbackData } from '../src';
 import { CurrentCtx, MenuAction } from './interfaces';
 import { initBasketMenu, initLanguageMenu, initStartMenu, initVideoFiltersMenu } from './menus';
 import { initSession } from './middlewares';
@@ -33,7 +33,7 @@ bot.use(parseCallbackData);
  * Menu example
  * */
 bot.command(MenuAction.START, initStartMenu);
-bot.action(new RegExp(MenuAction.START), KeyboardMenu.onAction(
+bot.action(new RegExp(MenuAction.START), GenericMenu.onAction(
     (ctx: CurrentCtx) => ctx.session.keyboardMenu,
     initStartMenu,
 ));
@@ -42,7 +42,7 @@ bot.action(new RegExp(MenuAction.START), KeyboardMenu.onAction(
  * Checkbox example
  * */
 bot.command(MenuAction.BASKET, initBasketMenu);
-bot.action(new RegExp(MenuAction.BASKET), KeyboardMenu.onAction(
+bot.action(new RegExp(MenuAction.BASKET), GenericMenu.onAction(
     (ctx: CurrentCtx) => ctx.session.keyboardMenu,
     initBasketMenu,
 ));
@@ -51,7 +51,7 @@ bot.action(new RegExp(MenuAction.BASKET), KeyboardMenu.onAction(
  * Radio example
  * */
 bot.command(MenuAction.LANGUAGE, initLanguageMenu);
-bot.action(new RegExp(MenuAction.LANGUAGE), KeyboardMenu.onAction(
+bot.action(new RegExp(MenuAction.LANGUAGE), GenericMenu.onAction(
     (ctx: CurrentCtx) => ctx.session.keyboardMenu,
     initLanguageMenu,
 ));
@@ -60,7 +60,7 @@ bot.action(new RegExp(MenuAction.LANGUAGE), KeyboardMenu.onAction(
  * Range example
  * */
 bot.command(MenuAction.VIDEO_FILTERS, initVideoFiltersMenu);
-bot.action(new RegExp(MenuAction.VIDEO_FILTERS), KeyboardMenu.onAction(
+bot.action(new RegExp(MenuAction.VIDEO_FILTERS), GenericMenu.onAction(
     (ctx: CurrentCtx) => ctx.session.keyboardMenu,
     initVideoFiltersMenu,
 ));
