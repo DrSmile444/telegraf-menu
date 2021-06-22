@@ -1,5 +1,4 @@
-import { GenericMenu } from '../../src';
-import { CheckboxMenu } from '../../src/menus/checkbox.menu';
+import { CheckboxMenu, GenericMenu } from '../../src';
 import { FRUITS_FILTERS } from '../const';
 import { Basket, CurrentCtx, FruitsFilterType, MenuAction } from '../interfaces';
 import { initStartMenu } from './start.menu';
