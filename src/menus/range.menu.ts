@@ -21,7 +21,7 @@ export class RangeMenu<
         return newButtons.filter(Boolean);
     }
 
-    menuToState(menu) {
+    menuToState(menu): RangeState {
         const newState: { [key: string]: any | any[] } = {};
 
         newState.from = menu[0].value;

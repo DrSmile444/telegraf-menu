@@ -6,50 +6,28 @@ import { KeyboardButton } from '../keyboard-button';
 
 export class RadioMenu<
     Ctx extends DefaultCtx = DefaultCtx,
-    State extends object = object,
+    State extends string = string,
 > extends GenericMenu<Ctx, State> {
     constructor(private config: RadioConfig<Ctx, State>) {
         super(config as any);
     }
 
-    stateToMenu(state) {
+    stateToMenu(state: string) {
         const allButtons = this.flatFilters;
         const newButtons: KeyboardButton<MenuOptionPayload<never>>[] = [];
 
-        this.groups.forEach((group) => {
-            const radioButton = allButtons.find((button) => {
-                return button.value.group === group && button.value.value === state[group];
-            });
-
-            newButtons.push(radioButton);
-        });
+        const currentButton = allButtons.find((button) => button.value.value === state);
+        newButtons.push(currentButton);
 
         return newButtons.filter(Boolean);
     }
 
-    menuToState(menu) {
-        const newState: { [key: string]: any | any[] } = {};
-
-        this.groups.forEach((group) => {
-            newState[group] = menu.find((button) => button.group === group)?.value;
-        });
-
-        Object.keys(newState).forEach((key) => {
-            const value = newState[key];
-            if (!value && value !== 0) {
-                delete newState[key];
-            }
-        });
-
-        return newState;
+    menuToState(menu): string {
+        return menu[0].value;
     }
 
     onActiveButton(ctx: Ctx, activeButton: MenuOptionPayload<never>) {
-        let activeButtons = this.stateToMenu(this.state).map((button) => button.value);
-
-        activeButtons = activeButtons.filter((button) => button.group !== activeButton.group);
-        activeButtons.push(activeButton);
-
+        const activeButtons = [activeButton];
         super.toggleActiveButton(ctx, activeButtons);
     }
 

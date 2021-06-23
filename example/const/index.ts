@@ -23,9 +23,9 @@ export const FRUITS_FILTERS: MenuFilters[] = [
 ];
 
 export const LANGUAGE_FILTERS: MenuGroupFilters<'language'> = [
-    new KeyboardButton(LanguageType.EN, { group: 'language', value: LanguageType.EN, default: true }),
-    new KeyboardButton(LanguageType.RU, { group: 'language', value: LanguageType.RU }),
-    new KeyboardButton(LanguageType.UA, { group: 'language', value: LanguageType.UA }),
+    new KeyboardButton(LanguageType.EN, { value: LanguageType.EN, default: true }),
+    new KeyboardButton(LanguageType.RU, { value: LanguageType.RU }),
+    new KeyboardButton(LanguageType.UA, { value: LanguageType.UA }),
 ];
 
 export const START_MENU_FILTERS: MenuFilters = [

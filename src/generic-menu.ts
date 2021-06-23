@@ -42,7 +42,6 @@ export abstract class GenericMenu<
     state: State;
     replaced: boolean = false;
 
-    protected readonly groups: string[];
     protected activeButtons: MenuOptionPayload<Group>[] = [];
     protected evenRange: boolean = false;
     private deleted: boolean = false;
@@ -53,17 +52,12 @@ export abstract class GenericMenu<
             action: options.a,
             payload: {
                 default: !!options.p.d,
-                group: options.p.g,
                 value: options.p.v,
             },
         };
 
         if (!options.p.d) {
             delete newOption.payload.default;
-        }
-
-        if (!options.p.g) {
-            delete newOption.payload.group;
         }
 
         return newOption;
@@ -74,17 +68,12 @@ export abstract class GenericMenu<
             a: options.action,
             p: {
                 d: Number(!!options.payload?.default) as 1 | 0,
-                g: options.payload?.group,
                 v: options.payload?.value,
             },
         };
 
         if (!options.payload?.default) {
             delete newOption.p.d;
-        }
-
-        if (!options.payload?.group) {
-            delete newOption.p.g;
         }
 
         return newOption;
@@ -115,7 +104,6 @@ export abstract class GenericMenu<
     constructor(
         private genericConfig: GenericConfig<Ctx, State, Group>,
     ) {
-        this.groups = this.flatFilters.map((filter) => filter.value.group);
         if (genericConfig.state) {
             this.updateState(genericConfig.state);
         }
@@ -123,7 +111,7 @@ export abstract class GenericMenu<
 
     abstract onActiveButton(ctx: Ctx, activeButton: MenuOptionPayload<Group>);
     abstract formatButtonLabel(ctx: Ctx, button: KeyboardButton<MenuOptionPayload<Group>>);
-    abstract stateToMenu(state: State);
+    abstract stateToMenu(state: State): KeyboardButton<MenuOptionPayload<never>>[];
     abstract menuToState(menu: MenuOptionPayload<Group>[]);
 
     get flatFilters(): MenuGroupFilters<Group> | MenuFilters {
@@ -205,12 +193,13 @@ export abstract class GenericMenu<
      * */
     protected getButtonLabelInfo(ctx: Ctx, button: KeyboardButton<MenuOptionPayload<Group>>) {
         const isDefaultActiveButton = this.activeButtons
-            .filter((activeButton) => activeButton.group === button.value?.group)
             .length === 0 && !!button.value.default;
 
         const isActiveButton = this.activeButtons.some((activeButton) => {
             return deepEqual(activeButton, button.value);
         });
+
+        console.log(this.activeButtons, button);
 
         const label = ctx.i18n?.t(button.label) || button.label;
 
@@ -244,7 +233,7 @@ export abstract class GenericMenu<
         }
 
         const payload = ctx.state.callbackData?.payload;
-        if (payload?.group === '_local' && payload?.value === '_submit') {
+        if (payload?.value === '_local_submit') {
             this.genericConfig.onSubmit?.(ctx, this.state);
             this.deleted = true;
 
@@ -312,7 +301,7 @@ export abstract class GenericMenu<
         if (this.genericConfig.onSubmit || this.genericConfig.submitMessage || this.genericConfig.onSubmitUpdater) {
             const shortButton = GenericMenu.remapFullToCompact({
                 action: this.genericConfig.action,
-                payload: { group: '_local', value: '_submit' },
+                payload: { value: '_local_submit' },
             });
 
             const callbackButton = Markup.button.callback(this.getSubmitMessage(ctx), JSON.stringify(shortButton));

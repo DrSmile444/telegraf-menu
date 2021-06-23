@@ -35,7 +35,7 @@ export interface RegularMenuConfig<Ctx extends DefaultCtx = DefaultCtx> extends
         'state' | 'onSubmit' | 'beforeChange' | 'onSubmitUpdater' | 'submitMessage'
     > {}
 
-export interface RadioConfig<Ctx extends DefaultCtx = DefaultCtx, State extends object = object> extends
+export interface RadioConfig<Ctx extends DefaultCtx = DefaultCtx, State extends string = string> extends
     GenericConfig<Ctx, State, string, RadioMenu<Ctx, State>, MenuGroupFilters | MenuGroupFilters[]> {}
 
 export interface RangeConfig<Ctx extends DefaultCtx = DefaultCtx, State extends RangeState = RangeState> extends
@@ -48,8 +48,8 @@ export type MenuFilters = KeyboardButton<MenuOptionPayload<never>>[];
 export type MenuGroupFilters<Group extends any = string> = KeyboardButton<MenuOptionPayload<Group>>[];
 
 export interface RangeState {
-    from: string;
-    to: string;
+    from?: string;
+    to?: string;
 }
 
 /**
@@ -62,7 +62,6 @@ export interface MenuOption<Group = string> {
 }
 
 export interface MenuOptionPayload<Group extends any = string> {
-    group?: Group;
     value: string;
     default?: boolean;
 }
@@ -77,7 +76,6 @@ export interface MenuOptionShort<Group = string> {
 }
 
 export interface MenuOptionPayloadShort<Group extends any = string> {
-    g: Group;
     v: string;
     d?: 1 | 0;
 }
