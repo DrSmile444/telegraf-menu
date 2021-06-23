@@ -1,14 +1,14 @@
 import { FORMATTING_EMOJIS } from '../const';
 import { GenericMenu } from '../generic-menu';
-import { DefaultCtx, MenuConfig, MenuOptionPayload, RangeState } from '../interfaces';
+import { DefaultCtx, MenuOptionPayload, RangeConfig, RangeState } from '../interfaces';
 import { KeyboardButton } from '../keyboard-button';
 
 
 export class RangeMenu<
     Ctx extends DefaultCtx = DefaultCtx,
     State extends RangeState = RangeState,
-> extends GenericMenu<any> {
-    constructor(private config: MenuConfig<never, State, Ctx>) {
+> extends GenericMenu<Ctx, never, State> {
+    constructor(private config: RangeConfig<Ctx, State>) {
         super(config);
     }
 

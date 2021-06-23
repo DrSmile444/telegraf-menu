@@ -4,8 +4,12 @@ import { Context, NarrowedContext } from 'telegraf';
 import { GenericMenu } from '../generic-menu';
 import { KeyboardButton } from '../keyboard-button';
 
-
-export interface MenuConfig<Group extends string = string, State extends any = any, Ctx extends DefaultCtx = DefaultCtx> {
+export type GenericState = string[] | string | object;
+export interface GenericConfig<
+    Group extends string = string,
+    State extends GenericState = GenericState,
+    Ctx extends DefaultCtx = DefaultCtx,
+> {
     action: string;
     message: string;
     submitMessage?: string;
@@ -13,13 +17,20 @@ export interface MenuConfig<Group extends string = string, State extends any = a
     state?: State;
     debug?: boolean;
     replaceWithNextMenu?: boolean;
-    menuGetter?(ctx: Ctx): GenericMenu;
-    menuSetter?(ctx: Ctx, menu: GenericMenu): any;
-    onChange?(ctx: MenuContextUpdate<Ctx, Group>, state: State): any;
+    menuGetter?(menuCtx: Ctx): GenericMenu;
+    menuSetter?(menuCtx: Ctx, menu: GenericMenu): any;
+    onChange?(changeCtx: MenuContextUpdate<Ctx, Group>, state: State): any;
     beforeChange?(changeCtx: MenuContextUpdate<Ctx, Group>, state: State): any;
-    onSubmit?(ctx: MenuContextUpdate<Ctx, Group>, state: State): any;
-    onSubmitUpdater?(ctx: MenuContextUpdate<Ctx, Group>, messageId: number, state: State): any;
+    onSubmit?(submitCtx: MenuContextUpdate<Ctx, Group>, state: State): any;
+    onSubmitUpdater?(submitCtx: MenuContextUpdate<Ctx, Group>, messageId: number, state: State): any;
 }
+
+export type RegularMenuConfig<Ctx extends DefaultCtx = DefaultCtx> =
+    Omit<GenericConfig<never, string, Ctx>, 'state' | 'onSubmit' | 'beforeChange' | 'onSubmitUpdater' | 'submitMessage'>;
+
+export type RadioConfig<Ctx extends DefaultCtx = DefaultCtx, State extends object = object> = GenericConfig<never, State, Ctx>;
+export type RangeConfig<Ctx extends DefaultCtx = DefaultCtx, State extends RangeState = RangeState> = GenericConfig<never, State, Ctx>;
+export type CheckboxConfig<Ctx extends DefaultCtx = DefaultCtx, State extends string[] = string[]> = GenericConfig<never, State, Ctx>;
 
 export type MenuFilters = KeyboardButton<MenuOptionPayload<never>>[];
 export type MenuGroupFilters<Group extends any = string> = KeyboardButton<MenuOptionPayload<Group>>[];

@@ -1,6 +1,6 @@
 import { FORMATTING_EMOJIS } from '../const';
 import { GenericMenu } from '../generic-menu';
-import { DefaultCtx, MenuConfig, MenuOptionPayload, RangeState } from '../interfaces';
+import { DefaultCtx, MenuOptionPayload, RadioConfig } from '../interfaces';
 import { KeyboardButton } from '../keyboard-button';
 
 
@@ -8,7 +8,7 @@ export class RadioMenu<
     Ctx extends DefaultCtx = DefaultCtx,
     State extends object = object,
 > extends GenericMenu<Ctx, never, State> {
-    constructor(private config: MenuConfig<never, State, Ctx>) {
+    constructor(private config: RadioConfig<Ctx, State>) {
         super(config);
     }
 

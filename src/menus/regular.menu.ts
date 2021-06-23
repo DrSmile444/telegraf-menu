@@ -2,12 +2,12 @@
 import * as deepEqual from 'deep-equal';
 
 import { GenericMenu } from '../generic-menu';
-import { DefaultCtx, MenuConfig, MenuOptionPayload } from '../interfaces';
+import { DefaultCtx, MenuOptionPayload, RegularMenuConfig } from '../interfaces';
 import { KeyboardButton } from '../keyboard-button';
 
 
 export class RegularMenu<Ctx extends DefaultCtx = DefaultCtx> extends GenericMenu<Ctx, never, string> {
-    constructor(private config: MenuConfig<never, string, Ctx>) {
+    constructor(private config: RegularMenuConfig<Ctx>) {
         super(config);
     }
 

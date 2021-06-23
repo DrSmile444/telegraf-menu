@@ -6,13 +6,13 @@ import { Markup } from 'telegraf';
 
 import {
     DefaultCtx,
-    MenuConfig,
+    GenericConfig, GenericState,
     MenuContextUpdate,
     MenuFilters,
     MenuGroupFilters,
     MenuOption,
     MenuOptionPayload,
-    MenuOptionShort,
+    MenuOptionShort
 } from './interfaces';
 import { KeyboardButton } from './keyboard-button';
 import { getCtxInfo, reduceArray } from './utils';
@@ -21,7 +21,7 @@ import { getCtxInfo, reduceArray } from './utils';
 export abstract class GenericMenu<
     Ctx extends DefaultCtx = DefaultCtx,
     Group extends string = any,
-    State extends string[] | string | object = any,
+    State extends GenericState = GenericState,
 > {
     /**
      * RXJS Observable with state changes
@@ -113,7 +113,7 @@ export abstract class GenericMenu<
     }
 
     constructor(
-        private genericConfig: MenuConfig<Group, State, Ctx>,
+        private genericConfig: GenericConfig<Group, State, Ctx>,
     ) {
         this.groups = this.flatFilters.map((filter) => filter.value.group);
         if (genericConfig.state) {

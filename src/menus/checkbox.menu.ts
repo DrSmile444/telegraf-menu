@@ -3,7 +3,7 @@ import * as deepEqual from 'deep-equal';
 
 import { FORMATTING_EMOJIS } from '../const';
 import { GenericMenu } from '../generic-menu';
-import { DefaultCtx, MenuConfig, MenuOptionPayload } from '../interfaces';
+import { CheckboxConfig, DefaultCtx, MenuOptionPayload } from '../interfaces';
 import { KeyboardButton } from '../keyboard-button';
 
 
@@ -11,7 +11,7 @@ export class CheckboxMenu<
     Ctx extends DefaultCtx = DefaultCtx,
     State extends string[] = string[],
 > extends GenericMenu<Ctx, never, State> {
-    constructor(private config: MenuConfig<never, State, Ctx>) {
+    constructor(private config: CheckboxConfig<Ctx, State>) {
         super(config);
     }
 
