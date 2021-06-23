@@ -13,7 +13,7 @@ export const initLanguageMenu = (ctx: CurrentCtx) => {
             filters: LANGUAGE_FILTERS,
             state: { language: ctx.session.language },
             debug: true,
-            replaceWithNextMenu: true,
+            replaceable: true,
             menuGetter: (menuCtx) => menuCtx.session.keyboardMenu,
             menuSetter: (menuCtx, menu) => menuCtx.session.keyboardMenu = menu,
             beforeChange(changeCtx, state): any {

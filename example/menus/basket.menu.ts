@@ -12,7 +12,7 @@ export const initBasketMenu = (ctx: CurrentCtx) => {
             filters: FRUITS_FILTERS,
             state: ctx.session.basket?.[FruitsFilterType.FRUIT],
             debug: true,
-            replaceWithNextMenu: true,
+            replaceable: true,
             menuGetter: (menuCtx) => menuCtx.session.keyboardMenu,
             menuSetter: (menuCtx, menu) => menuCtx.session.keyboardMenu = menu,
             onSubmit(changeCtx, state): any {

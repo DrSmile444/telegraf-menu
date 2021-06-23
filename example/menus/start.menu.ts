@@ -11,7 +11,7 @@ export const initStartMenu = (ctx: CurrentCtx) => {
             action: MenuAction.START,
             message: 'menu.start.start',
             filters: START_MENU_FILTERS,
-            replaceWithNextMenu: true,
+            replaceable: true,
             debug: true,
             menuGetter: (menuCtx) => menuCtx.session.keyboardMenu,
             menuSetter: (menuCtx, menu) => menuCtx.session.keyboardMenu = menu,

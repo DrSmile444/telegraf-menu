@@ -12,7 +12,7 @@ export const initVideoFiltersMenu = (ctx: CurrentCtx) => {
             filters: VIDEO_FILTERS,
             state: ctx.session.videoFilters,
             debug: true,
-            replaceWithNextMenu: true,
+            replaceable: true,
             menuGetter: (menuCtx) => menuCtx.session.keyboardMenu,
             menuSetter: (menuCtx, menu) => menuCtx.session.keyboardMenu = menu,
             onSubmit(changeCtx, state): any {

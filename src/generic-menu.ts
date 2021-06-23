@@ -160,7 +160,7 @@ export abstract class GenericMenu<
         };
 
         const oldMenu = this.genericConfig.menuGetter(ctx);
-        const isReplacingMenu = oldMenu?.genericConfig?.replaceWithNextMenu && !oldMenu?.deleted && oldMenu?.messageId !== this.messageId;
+        const isReplacingMenu = oldMenu?.genericConfig?.replaceable && !oldMenu?.deleted && oldMenu?.messageId !== this.messageId;
         oldMenu.replaced = true;
 
         if (isReplacingMenu && oldMenu.onAction) {
@@ -250,7 +250,7 @@ export abstract class GenericMenu<
 
             if (this.genericConfig.onSubmitUpdater) {
                 this.genericConfig.onSubmitUpdater(ctx, messageId, this.state);
-            } else if (!this.genericConfig.replaceWithNextMenu) {
+            } else if (!this.genericConfig.replaceable) {
                 ctx.deleteMessage(messageId).catch(() => {});
             }
             return;

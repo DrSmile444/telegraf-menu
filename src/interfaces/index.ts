@@ -16,7 +16,7 @@ export interface GenericConfig<
     filters: MenuFilters | MenuFilters[] | MenuGroupFilters<Group> | MenuGroupFilters<Group>[];
     state?: State;
     debug?: boolean;
-    replaceWithNextMenu?: boolean;
+    replaceable?: boolean;
     menuGetter?(menuCtx: Ctx): GenericMenu;
     menuSetter?(menuCtx: Ctx, menu: GenericMenu): any;
     onChange?(changeCtx: MenuContextUpdate<Ctx, Group>, state: State): any;
