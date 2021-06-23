@@ -10,7 +10,7 @@ import { KeyboardButton } from '../keyboard-button';
 export class CheckboxMenu<
     Ctx extends DefaultCtx = DefaultCtx,
     State extends string[] = string[],
-> extends GenericMenu<Ctx, never, State> {
+> extends GenericMenu<Ctx, State> {
     constructor(private config: CheckboxConfig<Ctx, State>) {
         super(config);
     }

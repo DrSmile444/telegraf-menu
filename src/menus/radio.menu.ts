@@ -7,7 +7,7 @@ import { KeyboardButton } from '../keyboard-button';
 export class RadioMenu<
     Ctx extends DefaultCtx = DefaultCtx,
     State extends object = object,
-> extends GenericMenu<Ctx, never, State> {
+> extends GenericMenu<Ctx, State> {
     constructor(private config: RadioConfig<Ctx, State>) {
         super(config);
     }

@@ -12,7 +12,7 @@ import {
     MenuGroupFilters,
     MenuOption,
     MenuOptionPayload,
-    MenuOptionShort
+    MenuOptionShort,
 } from './interfaces';
 import { KeyboardButton } from './keyboard-button';
 import { getCtxInfo, reduceArray } from './utils';
@@ -20,8 +20,8 @@ import { getCtxInfo, reduceArray } from './utils';
 
 export abstract class GenericMenu<
     Ctx extends DefaultCtx = DefaultCtx,
-    Group extends string = any,
     State extends GenericState = GenericState,
+    Group extends string = never,
 > {
     /**
      * RXJS Observable with state changes
@@ -97,7 +97,7 @@ export abstract class GenericMenu<
         menuGetter: (ctx: Ctx) => GenericMenu,
         initMenu: (ctx: Ctx) => any,
     ) {
-        return (ctx: MenuContextUpdate<Ctx>) => {
+        return (ctx: MenuContextUpdate<Ctx, never>) => {
             const oldMenu = menuGetter(ctx);
             if (oldMenu?.onAction) {
                 oldMenu.onAction(ctx);
@@ -113,7 +113,7 @@ export abstract class GenericMenu<
     }
 
     constructor(
-        private genericConfig: GenericConfig<Group, State, Ctx>,
+        private genericConfig: GenericConfig<Ctx, State, Group>,
     ) {
         this.groups = this.flatFilters.map((filter) => filter.value.group);
         if (genericConfig.state) {
@@ -186,7 +186,7 @@ export abstract class GenericMenu<
             await sendMessage();
         }
 
-        this.genericConfig.menuSetter?.(ctx, this);
+        this.genericConfig.menuSetter?.(ctx, this as any);
     }
 
     protected toggleActiveButton(ctx: Ctx, activeButtons: MenuOptionPayload<Group>[]) {

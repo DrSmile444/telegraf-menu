@@ -7,7 +7,7 @@ import { KeyboardButton } from '../keyboard-button';
 export class RangeMenu<
     Ctx extends DefaultCtx = DefaultCtx,
     State extends RangeState = RangeState,
-> extends GenericMenu<Ctx, never, State> {
+> extends GenericMenu<Ctx, State> {
     constructor(private config: RangeConfig<Ctx, State>) {
         super(config);
     }

@@ -1,12 +1,9 @@
-// @ts-ignore
-import * as deepEqual from 'deep-equal';
-
 import { GenericMenu } from '../generic-menu';
 import { DefaultCtx, MenuOptionPayload, RegularMenuConfig } from '../interfaces';
 import { KeyboardButton } from '../keyboard-button';
 
 
-export class RegularMenu<Ctx extends DefaultCtx = DefaultCtx> extends GenericMenu<Ctx, never, string> {
+export class RegularMenu<Ctx extends DefaultCtx = DefaultCtx> extends GenericMenu<Ctx, string> {
     constructor(private config: RegularMenuConfig<Ctx>) {
         super(config);
     }
