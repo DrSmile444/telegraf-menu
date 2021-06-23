@@ -9,7 +9,7 @@ export interface MenuConfig<Group extends string = string, State extends any = a
     action: string;
     message: string;
     submitMessage?: string;
-    filters: MenuFilters<Group>;
+    filters: MenuFilters<Group> | MenuFilters<Group>[];
     state?: State;
     debug?: boolean;
     replaceWithNextMenu?: boolean;
@@ -21,12 +21,7 @@ export interface MenuConfig<Group extends string = string, State extends any = a
     onSubmitUpdater?(ctx: MenuContextUpdate<Ctx, Group>, messageId: number, state: State): any;
 }
 
-export type MenuFilters<Group extends any = string> = KeyboardButton<MenuOptionPayload<Group>>[][];
-
-export interface MenuFormatters<State extends any, Filters extends any[][], Group> {
-    stateToMenu?(state: State, filters: Filters, groups: string[]): Filters[0];
-    menuToState?(menu: MenuOptionPayload<Group>[], groups: string[]): State;
-}
+export type MenuFilters<Group extends any = string> = KeyboardButton<MenuOptionPayload<Group>>[];
 
 /**
  * Full types

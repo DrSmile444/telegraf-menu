@@ -2,16 +2,13 @@
 import * as deepEqual from 'deep-equal';
 
 import { GenericMenu } from '../generic-menu';
-import { MenuConfig, MenuFilters, MenuFormatters, MenuOptionPayload } from '../interfaces';
+import { MenuConfig, MenuOptionPayload } from '../interfaces';
 import { KeyboardButton } from '../keyboard-button';
 
 
 export class RegularMenu<Ctx, State, Group> extends GenericMenu<any> {
-    constructor(
-        private config: MenuConfig<any, any, any>,
-        private stateMappers: MenuFormatters<State, MenuFilters<Group>, Group> = {},
-    ) {
-        super(config, stateMappers);
+    constructor(private config: MenuConfig<any, any, any>) {
+        super(config);
     }
 
     stateToMenu() {

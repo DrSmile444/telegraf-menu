@@ -1,16 +1,13 @@
 import { FORMATTING_EMOJIS } from '../const';
 import { GenericMenu } from '../generic-menu';
-import { MenuConfig, MenuFilters, MenuFormatters, MenuOptionPayload } from '../interfaces';
+import { MenuConfig, MenuOptionPayload } from '../interfaces';
 import { KeyboardButton } from '../keyboard-button';
 import { reduceArray } from '../utils';
 
 
 export class RangeMenu<Ctx, State, Group> extends GenericMenu<any> {
-    constructor(
-        private config: MenuConfig<any, any, any>,
-        private stateMappers: MenuFormatters<State, MenuFilters<Group>, Group> = {},
-    ) {
-        super(config, stateMappers);
+    constructor(private config: MenuConfig<any, any, any>) {
+        super(config);
     }
 
     stateToMenu(state, filters, groups) {
@@ -84,7 +81,7 @@ export class RangeMenu<Ctx, State, Group> extends GenericMenu<any> {
      * Returns active, first, and last button indexes and these buttons.
      * */
     private getRangeButtonIndexes(currentButton: MenuOptionPayload<Group>) {
-        const allButtons = this.config.filters.reduce(reduceArray);
+        const allButtons = this.flatFilters;
         const firstButton = this.activeButtons[0];
         const lastButton = this.activeButtons[1];
 

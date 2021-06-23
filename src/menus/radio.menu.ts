@@ -1,25 +1,21 @@
 import { FORMATTING_EMOJIS } from '../const';
 import { GenericMenu } from '../generic-menu';
-import { MenuConfig, MenuFilters, MenuFormatters, MenuOptionPayload } from '../interfaces';
+import { MenuConfig, MenuOptionPayload } from '../interfaces';
 import { KeyboardButton } from '../keyboard-button';
-import { reduceArray } from '../utils';
 
 
 export class RadioMenu<Ctx, State, Group> extends GenericMenu<any> {
-    constructor(
-        private config: MenuConfig<any, any, any>,
-        private stateMappers: MenuFormatters<State, MenuFilters<Group>, Group> = {},
-    ) {
-        super(config, stateMappers);
+    constructor(private config: MenuConfig<any, any, any>) {
+        super(config);
     }
 
-    stateToMenu(state, filters, groups) {
-        const allButtons = filters.reduce(reduceArray);
+    stateToMenu() {
+        const allButtons = this.flatFilters;
         const newButtons: KeyboardButton<any>[] = [];
 
-        groups.forEach((group) => {
+        this.groups.forEach((group) => {
             const radioButton = allButtons.find((button) => {
-                return button.value.group === group && button.value.value === state[group];
+                return button.value.group === group && button.value.value === this.state[group];
             });
 
             newButtons.push(radioButton);
@@ -48,12 +44,7 @@ export class RadioMenu<Ctx, State, Group> extends GenericMenu<any> {
     }
 
     onActiveButton(ctx: Ctx, activeButton: MenuOptionPayload<Group>) {
-        const stateToMenu = this.stateMappers.stateToMenu || this.stateToMenu;
-        let activeButtons = stateToMenu(
-            this.state,
-            this.config.filters,
-            this.groups,
-        ).map((button) => button.value);
+        let activeButtons = this.stateToMenu().map((button) => button.value);
 
         activeButtons = activeButtons.filter((button) => button.group !== activeButton.group);
         activeButtons.push(activeButton);

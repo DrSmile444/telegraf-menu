@@ -9,7 +9,6 @@ import {
     MenuConfig,
     MenuContextUpdate,
     MenuFilters,
-    MenuFormatters,
     MenuOption,
     MenuOptionPayload,
     MenuOptionShort,
@@ -102,9 +101,8 @@ export abstract class GenericMenu<Ctx extends DefaultCtx = DefaultCtx, Group ext
 
     constructor(
         private genericConfig: MenuConfig<Group, State, Ctx>,
-        private genericStateMappers: MenuFormatters<State, MenuFilters<Group>, Group>,
     ) {
-        this.groups = this.genericConfig.filters.reduce(reduceArray).map((filter) => filter.value.group);
+        this.groups = this.flatFilters.map((filter) => filter.value.group);
         if (genericConfig.state) {
             this.updateState(genericConfig.state);
         }
@@ -115,12 +113,17 @@ export abstract class GenericMenu<Ctx extends DefaultCtx = DefaultCtx, Group ext
     abstract stateToMenu(state: any, filters, groups);
     abstract menuToState(menu, groups);
 
+    get flatFilters(): MenuFilters<Group> {
+        return Array.isArray(this.genericConfig.filters[0])
+            ? (this.genericConfig.filters as MenuFilters<Group>[]).reduce(reduceArray)
+            : this.genericConfig.filters as MenuFilters<Group>;
+    }
+
     /**
      * Updates and redraws the state
      * */
     updateState(state: State, ctx?: Ctx) {
-        const stateToMenu = this.genericStateMappers?.stateToMenu || this.stateToMenu;
-        this.activeButtons = stateToMenu(
+        this.activeButtons = this.stateToMenu(
             state,
             this.genericConfig.filters,
             this.groups,
@@ -178,8 +181,7 @@ export abstract class GenericMenu<Ctx extends DefaultCtx = DefaultCtx, Group ext
     }
 
     protected toggleActiveButton(ctx: Ctx, activeButtons: MenuOptionPayload<Group>[]) {
-        const menuToState = this.genericStateMappers.menuToState || this.menuToState;
-        const newState = menuToState(activeButtons, this.groups);
+        const newState = this.menuToState(activeButtons, this.groups);
         this.activeButtons = activeButtons;
         this._state$.next(newState);
         this.state = newState;
