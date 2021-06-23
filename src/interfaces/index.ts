@@ -5,17 +5,19 @@ import { GenericMenu } from '../generic-menu';
 import { KeyboardButton } from '../keyboard-button';
 import { CheckboxMenu, RadioMenu, RangeMenu, RegularMenu } from '../menus';
 
+export type PossibleFilters<Group> = MenuFilters | MenuFilters[] | MenuGroupFilters<Group> | MenuGroupFilters<Group>[];
 export type GenericState = string[] | string | object;
 export interface GenericConfig<
     Ctx extends DefaultCtx = DefaultCtx,
     State extends GenericState = GenericState,
     Group extends string = never,
     Menu extends GenericMenu = GenericMenu,
+    Filters extends PossibleFilters<Group> = PossibleFilters<Group>,
 > {
     action: string;
     message: string;
     submitMessage?: string;
-    filters: MenuFilters | MenuFilters[] | MenuGroupFilters<Group> | MenuGroupFilters<Group>[];
+    filters: Filters;
     state?: State;
     debug?: boolean;
     replaceable?: boolean;
@@ -29,18 +31,18 @@ export interface GenericConfig<
 
 export interface RegularMenuConfig<Ctx extends DefaultCtx = DefaultCtx> extends
     Omit<
-        GenericConfig<Ctx, string, never, RegularMenu<Ctx>>,
+        GenericConfig<Ctx, string, never, RegularMenu<Ctx>, MenuFilters | MenuFilters[]>,
         'state' | 'onSubmit' | 'beforeChange' | 'onSubmitUpdater' | 'submitMessage'
     > {}
 
 export interface RadioConfig<Ctx extends DefaultCtx = DefaultCtx, State extends object = object> extends
-    GenericConfig<Ctx, State, never, RadioMenu<Ctx, State>> {}
+    GenericConfig<Ctx, State, string, RadioMenu<Ctx, State>, MenuGroupFilters | MenuGroupFilters[]> {}
 
 export interface RangeConfig<Ctx extends DefaultCtx = DefaultCtx, State extends RangeState = RangeState> extends
-    GenericConfig<Ctx, State, never, RangeMenu<Ctx, State>> {}
+    GenericConfig<Ctx, State, never, RangeMenu<Ctx, State>, MenuFilters | MenuFilters[]> {}
 
 export interface CheckboxConfig<Ctx extends DefaultCtx = DefaultCtx, State extends string[] = string[]> extends
-    GenericConfig<Ctx, State, never, CheckboxMenu<Ctx, State>> {}
+    GenericConfig<Ctx, State, never, CheckboxMenu<Ctx, State>, MenuFilters | MenuFilters[]> {}
 
 export type MenuFilters = KeyboardButton<MenuOptionPayload<never>>[];
 export type MenuGroupFilters<Group extends any = string> = KeyboardButton<MenuOptionPayload<Group>>[];

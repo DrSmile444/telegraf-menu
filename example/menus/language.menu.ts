@@ -9,7 +9,6 @@ export const initLanguageMenu = (ctx: CurrentCtx) => {
             action: MenuAction.LANGUAGE,
             message: 'menu.language.start',
             submitMessage: 'menu.language.submit',
-            // @ts-ignore
             filters: LANGUAGE_FILTERS,
             state: { language: ctx.session.language },
             debug: true,
