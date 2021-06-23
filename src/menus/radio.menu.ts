@@ -1,21 +1,24 @@
 import { FORMATTING_EMOJIS } from '../const';
 import { GenericMenu } from '../generic-menu';
-import { MenuConfig, MenuOptionPayload } from '../interfaces';
+import { DefaultCtx, MenuConfig, MenuOptionPayload, RangeState } from '../interfaces';
 import { KeyboardButton } from '../keyboard-button';
 
 
-export class RadioMenu<Ctx, State, Group> extends GenericMenu<any> {
-    constructor(private config: MenuConfig<any, any, any>) {
+export class RadioMenu<
+    Ctx extends DefaultCtx = DefaultCtx,
+    State extends object = object,
+> extends GenericMenu<Ctx, never, State> {
+    constructor(private config: MenuConfig<never, State, Ctx>) {
         super(config);
     }
 
-    stateToMenu() {
+    stateToMenu(state) {
         const allButtons = this.flatFilters;
-        const newButtons: KeyboardButton<any>[] = [];
+        const newButtons: KeyboardButton<MenuOptionPayload<never>>[] = [];
 
         this.groups.forEach((group) => {
             const radioButton = allButtons.find((button) => {
-                return button.value.group === group && button.value.value === this.state[group];
+                return button.value.group === group && button.value.value === state[group];
             });
 
             newButtons.push(radioButton);
@@ -24,12 +27,10 @@ export class RadioMenu<Ctx, State, Group> extends GenericMenu<any> {
         return newButtons.filter(Boolean);
     }
 
-    menuToState(menu, groups) {
+    menuToState(menu) {
         const newState: { [key: string]: any | any[] } = {};
 
-        console.log({ menu, groups });
-
-        groups.forEach((group) => {
+        this.groups.forEach((group) => {
             newState[group] = menu.find((button) => button.group === group)?.value;
         });
 
@@ -43,18 +44,16 @@ export class RadioMenu<Ctx, State, Group> extends GenericMenu<any> {
         return newState;
     }
 
-    onActiveButton(ctx: Ctx, activeButton: MenuOptionPayload<Group>) {
-        let activeButtons = this.stateToMenu().map((button) => button.value);
+    onActiveButton(ctx: Ctx, activeButton: MenuOptionPayload<never>) {
+        let activeButtons = this.stateToMenu(this.state).map((button) => button.value);
 
         activeButtons = activeButtons.filter((button) => button.group !== activeButton.group);
         activeButtons.push(activeButton);
 
-        console.log(activeButton);
-
         super.toggleActiveButton(ctx, activeButtons);
     }
 
-    formatButtonLabel(ctx: Ctx, button: KeyboardButton<MenuOptionPayload<Group>>) {
+    formatButtonLabel(ctx: Ctx, button: KeyboardButton<MenuOptionPayload<never>>) {
         const {RADIO_FORMATTING} = FORMATTING_EMOJIS;
         const {label, isDefaultActiveButton, isActiveButton} = super.getButtonLabelInfo(ctx, button);
 

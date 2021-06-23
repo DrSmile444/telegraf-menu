@@ -1,10 +1,10 @@
-import { GenericMenu, RangeMenu } from '../../src';
+import { RangeMenu } from '../../src';
 import { VIDEO_FILTERS } from '../const';
-import { CurrentCtx, MenuAction, VideoFilters, VideoFilterType } from '../interfaces';
+import { CurrentCtx, MenuAction, VideoFilters } from '../interfaces';
 import { initStartMenu } from './start.menu';
 
 export const initVideoFiltersMenu = (ctx: CurrentCtx) => {
-    new RangeMenu<CurrentCtx, VideoFilterType, VideoFilters>(
+    new RangeMenu<CurrentCtx, VideoFilters>(
         {
             action: MenuAction.VIDEO_FILTERS,
             message: 'menu.videoFilters.start',
@@ -13,8 +13,8 @@ export const initVideoFiltersMenu = (ctx: CurrentCtx) => {
             state: ctx.session.videoFilters,
             debug: true,
             replaceWithNextMenu: true,
-            menuGetter: (menuCtx: CurrentCtx) => menuCtx.session.keyboardMenu,
-            menuSetter: (menuCtx: CurrentCtx, menu: GenericMenu) => menuCtx.session.keyboardMenu = menu,
+            menuGetter: (menuCtx) => menuCtx.session.keyboardMenu,
+            menuSetter: (menuCtx, menu) => menuCtx.session.keyboardMenu = menu,
             onSubmit(changeCtx, state): any {
                 changeCtx.session.videoFilters = state;
                 initStartMenu(changeCtx);

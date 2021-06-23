@@ -4,22 +4,23 @@ import { CurrentCtx, LanguageType, MenuAction } from '../interfaces';
 import { initStartMenu } from './start.menu';
 
 export const initLanguageMenu = (ctx: CurrentCtx) => {
-    new RadioMenu<CurrentCtx, any, { 'language': LanguageType }>(
+    new RadioMenu<CurrentCtx, { 'language': LanguageType }>(
         {
             action: MenuAction.LANGUAGE,
             message: 'menu.language.start',
             submitMessage: 'menu.language.submit',
+            // @ts-ignore
             filters: LANGUAGE_FILTERS,
             state: { language: ctx.session.language },
             debug: true,
             replaceWithNextMenu: true,
-            menuGetter: (menuCtx: CurrentCtx) => menuCtx.session.keyboardMenu,
-            menuSetter: (menuCtx: CurrentCtx, menu: GenericMenu) => menuCtx.session.keyboardMenu = menu,
-            beforeChange(changeCtx: MenuContextUpdate<CurrentCtx>, state): any {
+            menuGetter: (menuCtx) => menuCtx.session.keyboardMenu,
+            menuSetter: (menuCtx, menu) => menuCtx.session.keyboardMenu = menu,
+            beforeChange(changeCtx, state): any {
                 changeCtx.session.language = state.language;
                 changeCtx.i18n.locale(state.language);
             },
-            onSubmit(submitCtx: MenuContextUpdate<CurrentCtx, any>, state: { language: LanguageType }): any {
+            onSubmit(submitCtx: MenuContextUpdate<CurrentCtx, any>): any {
                 initStartMenu(submitCtx);
             },
         },

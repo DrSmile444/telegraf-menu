@@ -3,18 +3,20 @@ import * as deepEqual from 'deep-equal';
 
 import { FORMATTING_EMOJIS } from '../const';
 import { GenericMenu } from '../generic-menu';
-import { MenuConfig, MenuOptionPayload } from '../interfaces';
+import { DefaultCtx, MenuConfig, MenuOptionPayload } from '../interfaces';
 import { KeyboardButton } from '../keyboard-button';
-import { reduceArray } from '../utils';
 
 
-export class CheckboxMenu<Ctx, State, Group> extends GenericMenu<any> {
-    constructor(private config: MenuConfig<any, any, any>) {
+export class CheckboxMenu<
+    Ctx extends DefaultCtx = DefaultCtx,
+    State extends string[] = string[],
+> extends GenericMenu<Ctx, never, State> {
+    constructor(private config: MenuConfig<never, State, Ctx>) {
         super(config);
     }
 
-    stateToMenu(state, filters, groups) {
-        const allButtons = filters.reduce(reduceArray);
+    stateToMenu(state) {
+        const allButtons = this.flatFilters;
         const newButtons: KeyboardButton<any>[] = [];
 
         const currentState = Array.isArray(state)
@@ -31,16 +33,12 @@ export class CheckboxMenu<Ctx, State, Group> extends GenericMenu<any> {
         return newButtons.filter(Boolean);
     }
 
-    menuToState(menu, groups): string[] {
+    menuToState(menu): string[] {
         return menu.map((button) => button.value);
     }
 
-    onActiveButton(ctx: Ctx, activeButton: MenuOptionPayload<Group>) {
-        const activeButtons = this.stateToMenu(
-            this.state,
-            this.config.filters,
-            this.groups,
-        ).map((button) => button.value);
+    onActiveButton(ctx: Ctx, activeButton: MenuOptionPayload) {
+        const activeButtons = this.stateToMenu(this.state).map((button) => button.value);
 
         let buttonIndex = null;
 
@@ -62,7 +60,7 @@ export class CheckboxMenu<Ctx, State, Group> extends GenericMenu<any> {
         super.toggleActiveButton(ctx, activeButtons);
     }
 
-    formatButtonLabel(ctx: Ctx, button: KeyboardButton<MenuOptionPayload<Group>>) {
+    formatButtonLabel(ctx: Ctx, button: KeyboardButton<MenuOptionPayload<never>>) {
         const {CHECKBOX_FORMATTING} = FORMATTING_EMOJIS;
         const {label, isActiveButton} = super.getButtonLabelInfo(ctx, button);
 

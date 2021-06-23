@@ -1,17 +1,19 @@
 import { FORMATTING_EMOJIS } from '../const';
 import { GenericMenu } from '../generic-menu';
-import { MenuConfig, MenuOptionPayload } from '../interfaces';
+import { DefaultCtx, MenuConfig, MenuOptionPayload, RangeState } from '../interfaces';
 import { KeyboardButton } from '../keyboard-button';
-import { reduceArray } from '../utils';
 
 
-export class RangeMenu<Ctx, State, Group> extends GenericMenu<any> {
-    constructor(private config: MenuConfig<any, any, any>) {
+export class RangeMenu<
+    Ctx extends DefaultCtx = DefaultCtx,
+    State extends RangeState = RangeState,
+> extends GenericMenu<any> {
+    constructor(private config: MenuConfig<never, State, Ctx>) {
         super(config);
     }
 
-    stateToMenu(state, filters, groups) {
-        const allButtons = filters.reduce(reduceArray);
+    stateToMenu(state) {
+        const allButtons = this.flatFilters;
         const newButtons: KeyboardButton<any>[] = allButtons.filter((button) => {
             return state.from === button.value.value || state.to === button.value.value;
         });
@@ -19,7 +21,7 @@ export class RangeMenu<Ctx, State, Group> extends GenericMenu<any> {
         return newButtons.filter(Boolean);
     }
 
-    menuToState(menu, groups) {
+    menuToState(menu) {
         const newState: { [key: string]: any | any[] } = {};
 
         newState.from = menu[0].value;
@@ -35,7 +37,7 @@ export class RangeMenu<Ctx, State, Group> extends GenericMenu<any> {
         return newState;
     }
 
-    onActiveButton(ctx: Ctx, activeButton: MenuOptionPayload<Group>) {
+    onActiveButton(ctx: Ctx, activeButton: MenuOptionPayload<never>) {
         const {
             activeButtonIndex,
             firstButtonIndex,
@@ -54,12 +56,10 @@ export class RangeMenu<Ctx, State, Group> extends GenericMenu<any> {
             this.evenRange = !this.evenRange;
         }
 
-        console.log(activeButton);
-
         super.toggleActiveButton(ctx, activeButtons);
     }
 
-    formatButtonLabel(ctx: Ctx, button: KeyboardButton<MenuOptionPayload<Group>>) {
+    formatButtonLabel(ctx: Ctx, button: KeyboardButton<MenuOptionPayload<never>>) {
         const {RANGE_FORMATTING} = FORMATTING_EMOJIS;
         const {label, isDefaultActiveButton, isActiveButton} = this.getButtonLabelInfo(ctx, button);
 
@@ -80,7 +80,7 @@ export class RangeMenu<Ctx, State, Group> extends GenericMenu<any> {
     /**
      * Returns active, first, and last button indexes and these buttons.
      * */
-    private getRangeButtonIndexes(currentButton: MenuOptionPayload<Group>) {
+    private getRangeButtonIndexes(currentButton: MenuOptionPayload<never>) {
         const allButtons = this.flatFilters;
         const firstButton = this.activeButtons[0];
         const lastButton = this.activeButtons[1];

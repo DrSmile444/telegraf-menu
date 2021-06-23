@@ -9,6 +9,7 @@ import {
     MenuConfig,
     MenuContextUpdate,
     MenuFilters,
+    MenuGroupFilters,
     MenuOption,
     MenuOptionPayload,
     MenuOptionShort,
@@ -17,7 +18,11 @@ import { KeyboardButton } from './keyboard-button';
 import { getCtxInfo, reduceArray } from './utils';
 
 
-export abstract class GenericMenu<Ctx extends DefaultCtx = DefaultCtx, Group extends string = any, State extends any = any> {
+export abstract class GenericMenu<
+    Ctx extends DefaultCtx = DefaultCtx,
+    Group extends string = any,
+    State extends string[] | string | object = any,
+> {
     /**
      * RXJS Observable with state changes
      * */
@@ -57,6 +62,10 @@ export abstract class GenericMenu<Ctx extends DefaultCtx = DefaultCtx, Group ext
             delete newOption.payload.default;
         }
 
+        if (!options.p.g) {
+            delete newOption.payload.group;
+        }
+
         return newOption;
     }
 
@@ -64,14 +73,18 @@ export abstract class GenericMenu<Ctx extends DefaultCtx = DefaultCtx, Group ext
         const newOption = {
             a: options.action,
             p: {
-                d: Number(!!options.payload.default) as 1 | 0,
-                g: options.payload.group,
-                v: options.payload.value,
+                d: Number(!!options.payload?.default) as 1 | 0,
+                g: options.payload?.group,
+                v: options.payload?.value,
             },
         };
 
-        if (!options.payload.default) {
+        if (!options.payload?.default) {
             delete newOption.p.d;
+        }
+
+        if (!options.payload?.group) {
+            delete newOption.p.g;
         }
 
         return newOption;
@@ -110,24 +123,20 @@ export abstract class GenericMenu<Ctx extends DefaultCtx = DefaultCtx, Group ext
 
     abstract onActiveButton(ctx: Ctx, activeButton: MenuOptionPayload<Group>);
     abstract formatButtonLabel(ctx: Ctx, button: KeyboardButton<MenuOptionPayload<Group>>);
-    abstract stateToMenu(state: any, filters, groups);
-    abstract menuToState(menu, groups);
+    abstract stateToMenu(state: State);
+    abstract menuToState(menu: MenuOptionPayload<Group>[]);
 
-    get flatFilters(): MenuFilters<Group> {
+    get flatFilters(): MenuGroupFilters<Group> | MenuFilters {
         return Array.isArray(this.genericConfig.filters[0])
-            ? (this.genericConfig.filters as MenuFilters<Group>[]).reduce(reduceArray)
-            : this.genericConfig.filters as MenuFilters<Group>;
+            ? (this.genericConfig.filters as MenuGroupFilters<Group>[]).reduce(reduceArray)
+            : this.genericConfig.filters as MenuGroupFilters<Group>;
     }
 
     /**
      * Updates and redraws the state
      * */
     updateState(state: State, ctx?: Ctx) {
-        this.activeButtons = this.stateToMenu(
-            state,
-            this.genericConfig.filters,
-            this.groups,
-        ).map((button) => button.value);
+        this.activeButtons = this.stateToMenu(state).map((button) => button.value);
 
         this._state$.next(state);
         this.state = state;
@@ -181,7 +190,7 @@ export abstract class GenericMenu<Ctx extends DefaultCtx = DefaultCtx, Group ext
     }
 
     protected toggleActiveButton(ctx: Ctx, activeButtons: MenuOptionPayload<Group>[]) {
-        const newState = this.menuToState(activeButtons, this.groups);
+        const newState = this.menuToState(activeButtons);
         this.activeButtons = activeButtons;
         this._state$.next(newState);
         this.state = newState;
@@ -196,7 +205,7 @@ export abstract class GenericMenu<Ctx extends DefaultCtx = DefaultCtx, Group ext
      * */
     protected getButtonLabelInfo(ctx: Ctx, button: KeyboardButton<MenuOptionPayload<Group>>) {
         const isDefaultActiveButton = this.activeButtons
-            .filter((activeButton) => activeButton.group === button.value.group)
+            .filter((activeButton) => activeButton.group === button.value?.group)
             .length === 0 && !!button.value.default;
 
         const isActiveButton = this.activeButtons.some((activeButton) => {
@@ -285,7 +294,11 @@ export abstract class GenericMenu<Ctx extends DefaultCtx = DefaultCtx, Group ext
      * Formats and creates keyboard buttons from the config
      * */
     private getKeyboard(ctx: Ctx) {
-        const buttons = this.genericConfig.filters.map((row) => {
+        const filters: MenuGroupFilters<Group>[] | MenuFilters[] = Array.isArray(this.genericConfig.filters[0])
+            ? this.genericConfig.filters as MenuGroupFilters<Group>[] | MenuFilters[] :
+            [this.genericConfig.filters] as MenuGroupFilters<Group>[] | MenuFilters[];
+
+        const buttons = filters.map((row) => {
             return row.map((button) => {
                 const shortButton = GenericMenu.remapFullToCompact({
                     action: this.genericConfig.action,
