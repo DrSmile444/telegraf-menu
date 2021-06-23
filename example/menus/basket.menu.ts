@@ -15,7 +15,7 @@ export const initBasketMenu = (ctx: CurrentCtx) => {
             replaceable: true,
             menuGetter: (menuCtx) => menuCtx.session.keyboardMenu,
             menuSetter: (menuCtx, menu) => menuCtx.session.keyboardMenu = menu,
-            onSubmit(changeCtx, state): any {
+            onSubmit(changeCtx, state) {
                 changeCtx.session.basket[FruitsFilterType.FRUIT] = state;
                 initStartMenu(changeCtx);
             },

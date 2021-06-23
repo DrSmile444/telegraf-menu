@@ -15,11 +15,11 @@ export const initLanguageMenu = (ctx: CurrentCtx) => {
             replaceable: true,
             menuGetter: (menuCtx) => menuCtx.session.keyboardMenu,
             menuSetter: (menuCtx, menu) => menuCtx.session.keyboardMenu = menu,
-            beforeChange(changeCtx, state): any {
+            beforeChange(changeCtx, state) {
                 changeCtx.session.language = state.language;
                 changeCtx.i18n.locale(state.language);
             },
-            onSubmit(submitCtx: MenuContextUpdate<CurrentCtx, any>): any {
+            onSubmit(submitCtx) {
                 initStartMenu(submitCtx);
             },
         },

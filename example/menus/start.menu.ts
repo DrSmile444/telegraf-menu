@@ -15,7 +15,7 @@ export const initStartMenu = (ctx: CurrentCtx) => {
             debug: true,
             menuGetter: (menuCtx) => menuCtx.session.keyboardMenu,
             menuSetter: (menuCtx, menu) => menuCtx.session.keyboardMenu = menu,
-            onChange(changeCtx, state): any {
+            onChange(changeCtx, state) {
                 switch (state) {
                     case MenuAction.BASKET:
                         return initBasketMenu(changeCtx);

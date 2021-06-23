@@ -9,7 +9,7 @@ export class RadioMenu<
     State extends object = object,
 > extends GenericMenu<Ctx, State> {
     constructor(private config: RadioConfig<Ctx, State>) {
-        super(config);
+        super(config as any);
     }
 
     stateToMenu(state) {
