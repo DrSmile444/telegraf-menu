@@ -35,8 +35,12 @@ export class RadioMenu<
     formatButtonLabel(ctx: TCtx, button: KeyboardButton<TValue>) {
         const {RADIO_FORMATTING} = FORMATTING_EMOJIS;
         const {label, isDefaultActiveButton, isActiveButton} = super.getButtonLabelInfo(ctx, button);
+        const activeButtonIndex = this.flatFilters.findIndex((allButton) => button.value === allButton.value);
+        const firstButtonIndex = this.flatFilters.findIndex((allButton) => allButton.isDefault);
 
-        return isActiveButton || isDefaultActiveButton ?
+        const isFirstDefault = firstButtonIndex === activeButtonIndex;
+
+        return isActiveButton || (isDefaultActiveButton && isFirstDefault) ?
             RADIO_FORMATTING.active + ' ' + label :
             RADIO_FORMATTING.disabled + ' ' + label;
     }
