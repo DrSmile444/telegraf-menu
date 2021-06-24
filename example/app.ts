@@ -1,15 +1,15 @@
 import { I18n } from '@edjopato/telegraf-i18n';
+import * as dotenv from 'dotenv';
 import * as path from 'path';
 import { Telegraf } from 'telegraf';
 import * as LocalSession from 'telegraf-session-local';
+
+dotenv.config();
 
 import { GenericMenu } from '../src';
 import { CurrentCtx, MenuAction } from './interfaces';
 import { initBasketMenu, initLanguageMenu, initStartMenu, initVideoFiltersMenu } from './menus';
 import { initSession } from './middlewares';
-
-require('dotenv').config();
-
 
 const bot = new Telegraf(process.env.BOT_TOKEN);
 const session = new LocalSession({ database: 'local.db.json' });
