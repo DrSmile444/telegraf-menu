@@ -1,22 +1,21 @@
-import { KeyboardMenu, MenuType } from '../../src';
+import { CheckboxMenu } from '../../src';
 import { FRUITS_FILTERS } from '../const';
-import { Basket, CurrentCtx, FruitsFilterType, MenuAction, VideoFilterType } from '../interfaces';
+import { Basket, CurrentCtx, FruitsFilterType, MenuAction } from '../interfaces';
 import { initStartMenu } from './start.menu';
 
 export const initBasketMenu = (ctx: CurrentCtx) => {
-    new KeyboardMenu<CurrentCtx, FruitsFilterType, Basket['fruit']>(
+    new CheckboxMenu<CurrentCtx, Basket['fruit']>(
         {
             action: MenuAction.BASKET,
             message: 'menu.basket.start',
             submitMessage: 'menu.basket.submit',
-            type: MenuType.CHECKBOX,
             filters: FRUITS_FILTERS,
             state: ctx.session.basket?.[FruitsFilterType.FRUIT],
             debug: true,
-            replaceWithNextMenu: true,
-            menuGetter: (menuCtx: CurrentCtx) => menuCtx.session.keyboardMenu,
-            menuSetter: (menuCtx: CurrentCtx, menu: KeyboardMenu) => menuCtx.session.keyboardMenu = menu,
-            onSubmit(changeCtx, state): any {
+            replaceable: true,
+            menuGetter: (menuCtx) => menuCtx.session.keyboardMenu,
+            menuSetter: (menuCtx, menu) => menuCtx.session.keyboardMenu = menu,
+            onSubmit(changeCtx, state) {
                 changeCtx.session.basket[FruitsFilterType.FRUIT] = state;
                 initStartMenu(changeCtx);
             },

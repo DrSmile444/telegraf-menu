@@ -1,67 +1,79 @@
 import { I18n, I18nContext, TemplateData } from '@edjopato/telegraf-i18n';
 import { Context, NarrowedContext } from 'telegraf';
 
+import { GenericMenu } from '../generic-menu';
 import { KeyboardButton } from '../keyboard-button';
-import { KeyboardMenu } from '../keyboard-menu';
+import { CheckboxMenu, RadioMenu, RangeMenu, RegularMenu } from '../menus';
 
-export enum MenuType {
-    MENU = 'menu',
-    RADIO = 'radio',
-    CHECKBOX = 'checkbox',
-    RANGE = 'range',
-}
-
-export interface MenuConfig<Group extends string = string, State extends any = any, Ctx extends DefaultCtx = DefaultCtx> {
+export type GenericState = string[] | string | object;
+export interface GenericConfig<
+    TCtx extends DefaultCtx = DefaultCtx,
+    TState extends GenericState = GenericState,
+    TMenu extends GenericMenu = GenericMenu,
+    TValue extends string = string,
+> {
     action: string;
-    type: MenuType;
     message: string;
     submitMessage?: string;
-    filters: MenuFilters<Group>;
-    state?: State;
+    filters: MenuFilters<TValue> | MenuFilters<TValue>[];
+    state?: TState;
     debug?: boolean;
-    replaceWithNextMenu?: boolean;
-    menuGetter?(ctx: Ctx): KeyboardMenu;
-    menuSetter?(ctx: Ctx, menu: KeyboardMenu): any;
-    onChange?(ctx: MenuContextUpdate<Ctx, Group>, state: State): any;
-    beforeChange?(changeCtx: MenuContextUpdate<Ctx, Group>, state: State): any;
-    onSubmit?(ctx: MenuContextUpdate<Ctx, Group>, state: State): any;
-    onSubmitUpdater?(ctx: MenuContextUpdate<Ctx, Group>, messageId: number, state: State): any;
+    replaceable?: boolean;
+    menuGetter?(menuCtx: TCtx): GenericMenu;
+    menuSetter?(menuCtx: TCtx, menu: TMenu): any;
+    onChange?(changeCtx: MenuContextUpdate<TCtx>, state: TState): any;
+    beforeChange?(changeCtx: MenuContextUpdate<TCtx>, state: TState): any;
+    onSubmit?(submitCtx: MenuContextUpdate<TCtx>, state: TState): any;
+    onSubmitUpdater?(submitCtx: MenuContextUpdate<TCtx>, messageId: number, state: TState): any;
 }
 
-export type MenuFilters<Group extends any = string> = KeyboardButton<MenuOptionPayload<Group>>[][];
+export interface RegularMenuConfig<TCtx extends DefaultCtx = DefaultCtx, TValue extends string = string> extends
+    Omit<
+        GenericConfig<TCtx, string, RegularMenu<TCtx, TValue>, TValue>,
+        'state' | 'onSubmit' | 'beforeChange' | 'onSubmitUpdater' | 'submitMessage' | 'onChange'
+    > {
+    onChange?(changeCtx: MenuContextUpdate<TCtx>, state: TValue): any;
+}
 
-export interface MenuFormatters<State extends any, Filters extends any[][], Group> {
-    stateToMenu(state: State, filters: Filters, type: MenuType, groups: string[]): Filters[0];
-    menuToState(menu: MenuOptionPayload<Group>[], type: MenuType, groups: string[]): State;
+export interface RadioConfig<TCtx extends DefaultCtx = DefaultCtx, TState extends string = string, TValue extends string = string> extends
+    GenericConfig<TCtx, TState, RadioMenu<TCtx, TState>, TValue> {}
+
+export interface RangeConfig<
+    TCtx extends DefaultCtx = DefaultCtx,
+    TState extends RangeState<TValue> = RangeState<any>,
+    TValue extends string = string,
+> extends GenericConfig<TCtx, TState, RangeMenu<TCtx, TState>, TValue> {}
+
+export interface CheckboxConfig<
+    TCtx extends DefaultCtx = DefaultCtx,
+    TState extends string[] = string[],
+    TValue extends string = string,
+> extends GenericConfig<TCtx, TState, CheckboxMenu<TCtx, TState>, TValue> {}
+
+export type MenuFilters<TValue extends string = string> = KeyboardButton<TValue>[];
+
+export interface RangeState<TValue extends string | number = string> {
+    from?: TValue;
+    to?: TValue;
 }
 
 /**
  * Full types
  * */
 
-export interface MenuOption<Group = string> {
+export interface MenuOption<TValue> {
     action: string;
-    payload: MenuOptionPayload<Group>;
-}
-
-export interface MenuOptionPayload<Group extends any = string> {
-    group: Group;
-    value: string;
-    default?: boolean;
+    value: TValue;
+    isDefault?: boolean;
 }
 
 /**
  * Short types for callback data
  * */
 
-export interface MenuOptionShort<Group = string> {
+export interface MenuOptionShort<TValue> {
     a: string;
-    p: MenuOptionPayloadShort<Group>;
-}
-
-export interface MenuOptionPayloadShort<Group extends any = string> {
-    g: Group;
-    v: string;
+    v: TValue;
     d?: 1 | 0;
 }
 
@@ -74,8 +86,8 @@ export type DefaultCtx = NarrowedContext<Context<any> & { match: RegExpExecArray
     i18n?: I18nContext;
 };
 
-export type MenuContextUpdate<Ctx extends DefaultCtx = DefaultCtx, Group = string> = {
+export type MenuContextUpdate<TCtx extends DefaultCtx = DefaultCtx, TValue extends string = string> = {
     state: {
-        callbackData: MenuOption<Group>;
+        callbackData: MenuOption<TValue>;
     };
-} & Ctx;
+} & TCtx;

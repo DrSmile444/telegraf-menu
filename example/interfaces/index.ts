@@ -1,6 +1,6 @@
 import { I18nContext } from '@edjopato/telegraf-i18n';
 
-import { DefaultCtx, I18nOverride, KeyboardMenu } from '../../src';
+import { DefaultCtx, GenericMenu } from '../../src';
 
 export enum MenuAction {
     BASKET = 'basket',
@@ -42,6 +42,6 @@ export type CurrentCtx = DefaultCtx & {
         },
         language: LanguageType,
         basket: Basket;
-        keyboardMenu: KeyboardMenu,
+        keyboardMenu: GenericMenu,
     },
 };

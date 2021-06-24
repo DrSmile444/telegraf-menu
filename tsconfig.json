@@ -1,12 +1,12 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
+    "baseUrl": "./src",
+    "outDir": "./dist",
     "declaration": true,
     "experimentalDecorators": true,
-    "lib": ["es2017", "dom"],
-    "types": ["reflect-metadata", "node", "jest"],
+    "lib": ["es2017"],
+    "types": ["node"],
     "module": "commonjs",
-    "outDir": "dist",
     "removeComments": true,
     "resolveJsonModule": true,
     "sourceMap": true,
@@ -14,9 +14,9 @@
     "target": "es5",
     "emitDecoratorMetadata": true,
     "paths": {
-      "*": ["node_modules/*", "src/modules/bot/types/*"]
+      "*": ["node_modules/*"]
     }
   },
   "exclude": ["node_modules", "dist"],
-  "include": ["src/**/*", "src/locales/*.json"]
+  "include": ["src/**/*"]
 }
