@@ -7,39 +7,39 @@ import { CheckboxMenu, RadioMenu, RangeMenu, RegularMenu } from '../menus';
 
 export type GenericState = string[] | string | object;
 export interface GenericConfig<
-    Ctx extends DefaultCtx = DefaultCtx,
-    State extends GenericState = GenericState,
-    Menu extends GenericMenu = GenericMenu,
+    TCtx extends DefaultCtx = DefaultCtx,
+    TState extends GenericState = GenericState,
+    TMenu extends GenericMenu = GenericMenu,
 > {
     action: string;
     message: string;
     submitMessage?: string;
     filters: MenuFilters | MenuFilters[];
-    state?: State;
+    state?: TState;
     debug?: boolean;
     replaceable?: boolean;
-    menuGetter?(menuCtx: Ctx): GenericMenu;
-    menuSetter?(menuCtx: Ctx, menu: Menu): any;
-    onChange?(changeCtx: MenuContextUpdate<Ctx>, state: State): any;
-    beforeChange?(changeCtx: MenuContextUpdate<Ctx>, state: State): any;
-    onSubmit?(submitCtx: MenuContextUpdate<Ctx>, state: State): any;
-    onSubmitUpdater?(submitCtx: MenuContextUpdate<Ctx>, messageId: number, state: State): any;
+    menuGetter?(menuCtx: TCtx): GenericMenu;
+    menuSetter?(menuCtx: TCtx, menu: TMenu): any;
+    onChange?(changeCtx: MenuContextUpdate<TCtx>, state: TState): any;
+    beforeChange?(changeCtx: MenuContextUpdate<TCtx>, state: TState): any;
+    onSubmit?(submitCtx: MenuContextUpdate<TCtx>, state: TState): any;
+    onSubmitUpdater?(submitCtx: MenuContextUpdate<TCtx>, messageId: number, state: TState): any;
 }
 
-export interface RegularMenuConfig<Ctx extends DefaultCtx = DefaultCtx> extends
+export interface RegularMenuConfig<TCtx extends DefaultCtx = DefaultCtx> extends
     Omit<
-        GenericConfig<Ctx, string, RegularMenu<Ctx>>,
+        GenericConfig<TCtx, string, RegularMenu<TCtx>>,
         'state' | 'onSubmit' | 'beforeChange' | 'onSubmitUpdater' | 'submitMessage'
     > {}
 
-export interface RadioConfig<Ctx extends DefaultCtx = DefaultCtx, State extends string = string> extends
-    GenericConfig<Ctx, State, RadioMenu<Ctx, State>> {}
+export interface RadioConfig<TCtx extends DefaultCtx = DefaultCtx, TState extends string = string> extends
+    GenericConfig<TCtx, TState, RadioMenu<TCtx, TState>> {}
 
-export interface RangeConfig<Ctx extends DefaultCtx = DefaultCtx, State extends RangeState = RangeState> extends
-    GenericConfig<Ctx, State, RangeMenu<Ctx, State>> {}
+export interface RangeConfig<TCtx extends DefaultCtx = DefaultCtx, TState extends RangeState = RangeState> extends
+    GenericConfig<TCtx, TState, RangeMenu<TCtx, TState>> {}
 
-export interface CheckboxConfig<Ctx extends DefaultCtx = DefaultCtx, State extends string[] = string[]> extends
-    GenericConfig<Ctx, State, CheckboxMenu<Ctx, State>> {}
+export interface CheckboxConfig<TCtx extends DefaultCtx = DefaultCtx, TState extends string[] = string[]> extends
+    GenericConfig<TCtx, TState, CheckboxMenu<TCtx, TState>> {}
 
 export type MenuFilters = KeyboardButton<MenuOptionPayload>[];
 
@@ -85,8 +85,8 @@ export type DefaultCtx = NarrowedContext<Context<any> & { match: RegExpExecArray
     i18n?: I18nContext;
 };
 
-export type MenuContextUpdate<Ctx extends DefaultCtx = DefaultCtx> = {
+export type MenuContextUpdate<TCtx extends DefaultCtx = DefaultCtx> = {
     state: {
         callbackData: MenuOption;
     };
-} & Ctx;
+} & TCtx;

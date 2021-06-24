@@ -5,10 +5,10 @@ import { KeyboardButton } from '../keyboard-button';
 
 
 export class RangeMenu<
-    Ctx extends DefaultCtx = DefaultCtx,
-    State extends RangeState = RangeState,
-> extends GenericMenu<Ctx, State> {
-    constructor(private config: RangeConfig<Ctx, State>) {
+    TCtx extends DefaultCtx = DefaultCtx,
+    TState extends RangeState = RangeState,
+> extends GenericMenu<TCtx, TState> {
+    constructor(private config: RangeConfig<TCtx, TState>) {
         super(config);
     }
 
@@ -37,7 +37,7 @@ export class RangeMenu<
         return newState;
     }
 
-    onActiveButton(ctx: Ctx, activeButton: MenuOptionPayload<never>) {
+    onActiveButton(ctx: TCtx, activeButton: MenuOptionPayload) {
         const {
             activeButtonIndex,
             firstButtonIndex,
@@ -59,7 +59,7 @@ export class RangeMenu<
         super.toggleActiveButton(ctx, activeButtons);
     }
 
-    formatButtonLabel(ctx: Ctx, button: KeyboardButton<MenuOptionPayload<never>>) {
+    formatButtonLabel(ctx: TCtx, button: KeyboardButton<MenuOptionPayload>) {
         const {RANGE_FORMATTING} = FORMATTING_EMOJIS;
         const {label, isDefaultActiveButton, isActiveButton} = this.getButtonLabelInfo(ctx, button);
 
@@ -80,7 +80,7 @@ export class RangeMenu<
     /**
      * Returns active, first, and last button indexes and these buttons.
      * */
-    private getRangeButtonIndexes(currentButton: MenuOptionPayload<never>) {
+    private getRangeButtonIndexes(currentButton: MenuOptionPayload) {
         const allButtons = this.flatFilters;
         const firstButton = this.activeButtons[0];
         const lastButton = this.activeButtons[1];

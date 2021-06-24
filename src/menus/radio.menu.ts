@@ -5,16 +5,16 @@ import { KeyboardButton } from '../keyboard-button';
 
 
 export class RadioMenu<
-    Ctx extends DefaultCtx = DefaultCtx,
-    State extends string = string,
-> extends GenericMenu<Ctx, State> {
-    constructor(private config: RadioConfig<Ctx, State>) {
+    TCtx extends DefaultCtx = DefaultCtx,
+    TState extends string = string,
+> extends GenericMenu<TCtx, TState> {
+    constructor(private config: RadioConfig<TCtx, TState>) {
         super(config as any);
     }
 
     stateToMenu(state: string) {
         const allButtons = this.flatFilters;
-        const newButtons: KeyboardButton<MenuOptionPayload<never>>[] = [];
+        const newButtons: KeyboardButton<MenuOptionPayload>[] = [];
 
         const currentButton = allButtons.find((button) => button.value.value === state);
         newButtons.push(currentButton);
@@ -26,12 +26,12 @@ export class RadioMenu<
         return menu[0].value;
     }
 
-    onActiveButton(ctx: Ctx, activeButton: MenuOptionPayload<never>) {
+    onActiveButton(ctx: TCtx, activeButton: MenuOptionPayload) {
         const activeButtons = [activeButton];
         super.toggleActiveButton(ctx, activeButtons);
     }
 
-    formatButtonLabel(ctx: Ctx, button: KeyboardButton<MenuOptionPayload<never>>) {
+    formatButtonLabel(ctx: TCtx, button: KeyboardButton<MenuOptionPayload>) {
         const {RADIO_FORMATTING} = FORMATTING_EMOJIS;
         const {label, isDefaultActiveButton, isActiveButton} = super.getButtonLabelInfo(ctx, button);
 

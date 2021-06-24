@@ -3,8 +3,8 @@ import { DefaultCtx, MenuOptionPayload, RegularMenuConfig } from '../interfaces'
 import { KeyboardButton } from '../keyboard-button';
 
 
-export class RegularMenu<Ctx extends DefaultCtx = DefaultCtx> extends GenericMenu<Ctx, string> {
-    constructor(private config: RegularMenuConfig<Ctx>) {
+export class RegularMenu<TCtx extends DefaultCtx = DefaultCtx> extends GenericMenu<TCtx, string> {
+    constructor(private config: RegularMenuConfig<TCtx>) {
         super(config);
     }
 
@@ -16,12 +16,12 @@ export class RegularMenu<Ctx extends DefaultCtx = DefaultCtx> extends GenericMen
         return menu[0].value;
     }
 
-    onActiveButton(ctx: Ctx, activeButton: MenuOptionPayload<never>) {
+    onActiveButton(ctx: TCtx, activeButton: MenuOptionPayload) {
         const activeButtons = [activeButton];
         super.toggleActiveButton(ctx, activeButtons);
     }
 
-    formatButtonLabel(ctx: Ctx, button: KeyboardButton<MenuOptionPayload<never>>) {
+    formatButtonLabel(ctx: TCtx, button: KeyboardButton<MenuOptionPayload>) {
         const {label} = super.getButtonLabelInfo(ctx, button);
         return label;
     }

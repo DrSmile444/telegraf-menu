@@ -8,10 +8,10 @@ import { KeyboardButton } from '../keyboard-button';
 
 
 export class CheckboxMenu<
-    Ctx extends DefaultCtx = DefaultCtx,
-    State extends string[] = string[],
-> extends GenericMenu<Ctx, State> {
-    constructor(private config: CheckboxConfig<Ctx, State>) {
+    TCtx extends DefaultCtx = DefaultCtx,
+    TState extends string[] = string[],
+> extends GenericMenu<TCtx, TState> {
+    constructor(private config: CheckboxConfig<TCtx, TState>) {
         super(config);
     }
 
@@ -37,7 +37,7 @@ export class CheckboxMenu<
         return menu.map((button) => button.value);
     }
 
-    onActiveButton(ctx: Ctx, activeButton: MenuOptionPayload) {
+    onActiveButton(ctx: TCtx, activeButton: MenuOptionPayload) {
         const activeButtons = this.stateToMenu(this.state).map((button) => button.value);
 
         let buttonIndex = null;
@@ -60,7 +60,7 @@ export class CheckboxMenu<
         super.toggleActiveButton(ctx, activeButtons);
     }
 
-    formatButtonLabel(ctx: Ctx, button: KeyboardButton<MenuOptionPayload<never>>) {
+    formatButtonLabel(ctx: TCtx, button: KeyboardButton<MenuOptionPayload>) {
         const {CHECKBOX_FORMATTING} = FORMATTING_EMOJIS;
         const {label, isActiveButton} = super.getButtonLabelInfo(ctx, button);
 

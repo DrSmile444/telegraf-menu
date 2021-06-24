@@ -16,8 +16,8 @@ import { getCtxInfo, reduceArray } from './utils';
 
 
 export abstract class GenericMenu<
-    Ctx extends DefaultCtx = DefaultCtx,
-    State extends GenericState = GenericState,
+    TCtx extends DefaultCtx = DefaultCtx,
+    TState extends GenericState = GenericState,
 > {
     private get debugMessage() {
         return !!this.genericConfig.debug ?
@@ -26,7 +26,7 @@ export abstract class GenericMenu<
     }
 
     messageId: number;
-    state: State;
+    state: TState;
     replaced: boolean = false;
 
     protected activeButtons: MenuOptionPayload[] = [];
@@ -68,11 +68,11 @@ export abstract class GenericMenu<
     /**
      * Uses as action handler on callback query
      * */
-    static onAction<Ctx extends DefaultCtx = DefaultCtx>(
-        menuGetter: (ctx: Ctx) => GenericMenu,
-        initMenu: (ctx: Ctx) => any,
+    static onAction<TCtx extends DefaultCtx = DefaultCtx>(
+        menuGetter: (ctx: TCtx) => GenericMenu,
+        initMenu: (ctx: TCtx) => any,
     ) {
-        return (ctx: MenuContextUpdate<Ctx>) => {
+        return (ctx: MenuContextUpdate<TCtx>) => {
             const oldMenu = menuGetter(ctx);
             if (oldMenu?.onAction) {
                 oldMenu.onAction(ctx);
@@ -88,16 +88,16 @@ export abstract class GenericMenu<
     }
 
     constructor(
-        private genericConfig: GenericConfig<Ctx, State>,
+        private genericConfig: GenericConfig<TCtx, TState>,
     ) {
         if (genericConfig.state) {
             this.updateState(genericConfig.state);
         }
     }
 
-    abstract onActiveButton(ctx: Ctx, activeButton: MenuOptionPayload);
-    abstract formatButtonLabel(ctx: Ctx, button: KeyboardButton<MenuOptionPayload>);
-    abstract stateToMenu(state: State): KeyboardButton<MenuOptionPayload>[];
+    abstract onActiveButton(ctx: TCtx, activeButton: MenuOptionPayload);
+    abstract formatButtonLabel(ctx: TCtx, button: KeyboardButton<MenuOptionPayload>);
+    abstract stateToMenu(state: TState): KeyboardButton<MenuOptionPayload>[];
     abstract menuToState(menu: MenuOptionPayload[]);
 
     get flatFilters(): MenuFilters {
@@ -109,7 +109,7 @@ export abstract class GenericMenu<
     /**
      * Updates and redraws the state
      * */
-    updateState(state: State, ctx?: Ctx) {
+    updateState(state: TState, ctx?: TCtx) {
         this.activeButtons = this.stateToMenu(state).map((button) => button.value);
         this.state = state;
 
@@ -122,7 +122,7 @@ export abstract class GenericMenu<
      * After creating the menu instance, send it.
      * Redraws the old menu
      * */
-    async sendMenu(ctx: Ctx) {
+    async sendMenu(ctx: TCtx) {
         const { chatId } = getCtxInfo(ctx as any);
         ctx.telegram.sendChatAction(chatId, 'typing');
 
@@ -161,7 +161,7 @@ export abstract class GenericMenu<
         this.genericConfig.menuSetter?.(ctx, this as any);
     }
 
-    protected toggleActiveButton(ctx: Ctx, activeButtons: MenuOptionPayload[]) {
+    protected toggleActiveButton(ctx: TCtx, activeButtons: MenuOptionPayload[]) {
         const newState = this.menuToState(activeButtons);
         this.activeButtons = activeButtons;
         this.state = newState;
@@ -174,7 +174,7 @@ export abstract class GenericMenu<
     /**
      * Creates the label depending on button state and menu type.
      * */
-    protected getButtonLabelInfo(ctx: Ctx, button: KeyboardButton<MenuOptionPayload>) {
+    protected getButtonLabelInfo(ctx: TCtx, button: KeyboardButton<MenuOptionPayload>) {
         const isDefaultActiveButton = this.activeButtons
             .length === 0 && !!button.value.default;
 
@@ -193,16 +193,16 @@ export abstract class GenericMenu<
         };
     }
 
-    private getMessage(ctx: Ctx) {
+    private getMessage(ctx: TCtx) {
         const message = ctx.i18n?.t(this.genericConfig.message) || this.genericConfig.message;
         return message + this.debugMessage;
     }
 
-    private getSubmitMessage(ctx: Ctx) {
+    private getSubmitMessage(ctx: TCtx) {
         return ctx.i18n?.t(this.genericConfig.submitMessage) || 'Submit';
     }
 
-    private onAction(ctx: MenuContextUpdate<Ctx>) {
+    private onAction(ctx: MenuContextUpdate<TCtx>) {
         const messageId = ctx.callbackQuery?.message?.message_id;
         /**
          * If clicked on old inactive keyboard
@@ -236,7 +236,7 @@ export abstract class GenericMenu<
      * Redraw current menu with new buttons.
      * Updates message and keyboard.
      * */
-    private redrawMenu(ctx: Ctx) {
+    private redrawMenu(ctx: TCtx) {
         const { chatId } = getCtxInfo(ctx as any);
 
         /**
@@ -265,7 +265,7 @@ export abstract class GenericMenu<
     /**
      * Formats and creates keyboard buttons from the config
      * */
-    private getKeyboard(ctx: Ctx) {
+    private getKeyboard(ctx: TCtx) {
         const filters: MenuFilters[] = Array.isArray(this.genericConfig.filters[0])
             ? this.genericConfig.filters as MenuFilters[] :
             [this.genericConfig.filters] as MenuFilters[];
