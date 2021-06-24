@@ -126,8 +126,12 @@ export abstract class GenericMenu<
         };
 
         const oldMenu = this.genericConfig.menuGetter(ctx);
-        const isReplacingMenu = oldMenu?.genericConfig?.replaceable && !oldMenu?.deleted && oldMenu?.messageId !== this.messageId;
-        oldMenu.replaced = true;
+        let isReplacingMenu = false;
+
+        if (oldMenu) {
+            isReplacingMenu = oldMenu.genericConfig?.replaceable && !oldMenu.deleted && oldMenu.messageId !== this.messageId;
+            oldMenu.replaced = true;
+        }
 
         if (isReplacingMenu && oldMenu.onAction) {
             this.messageId = oldMenu.messageId;
