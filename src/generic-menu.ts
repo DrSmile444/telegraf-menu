@@ -162,7 +162,7 @@ export abstract class GenericMenu<
         this.activeButtons = activeButtons;
         this.state = newState;
         this.evenRange = !this.evenRange;
-        this.genericConfig.beforeChange?.(ctx, this.state);
+        this.genericConfig.beforeChange?.(ctx as MenuContextUpdate<TCtx>, this.state);
 
         this.redrawMenu(ctx);
     }
