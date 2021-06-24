@@ -6,7 +6,7 @@ State-based Telegraf menus (Radio, Checkbox, Range) written with TypeScript.
 $ npm install telegraf-menu
 ```
 
-![example](./docs/telegraf-menu.main.gif)
+![example](https://github.com/DrSmile444/telegraf-menu/raw/main/docs/telegraf-menu.main.gif)
 ## Table of Contents
 
 
@@ -50,7 +50,7 @@ $ npm install telegraf-menu
 
 RegularMenu allows you to draw a simple menu without logic and handle every button click. Returns button's value.
 
-![regular menu](./docs/regular-menu.png)
+![regular menu](https://github.com/DrSmile444/telegraf-menu/raw/main/docs/regular-menu.png)
 
 Example code:
 
@@ -86,7 +86,7 @@ const initStartMenu = (ctx: CurrentCtx) => {
 
 CheckboxMenu allows you to draw a checkbox menu and handle onChange, onSubmit, and other hooks. You can choose as many options as you want. Returns array of button values.
 
-![checkbox menu](./docs/checkbox-menu.png)
+![checkbox menu](https://github.com/DrSmile444/telegraf-menu/raw/main/docs/checkbox-menu.png)
 
 ```ts
 export const initBasketMenu = (ctx: CurrentCtx) => {
@@ -113,7 +113,7 @@ export const initBasketMenu = (ctx: CurrentCtx) => {
 
 RadioMenu allows you to draw a radio menu and handle onChange, onSubmit, and other hooks. You can choose only one value. Returns button's values.
 
-![radio menu](./docs/radio-menu.png)
+![radio menu](https://github.com/DrSmile444/telegraf-menu/raw/main/docs/radio-menu.png)
 
 Code example:
 
@@ -145,7 +145,7 @@ export const initLanguageMenu = (ctx: CurrentCtx) => {
 
 RangeMenu allows you to draw a range menu and handle onChange, onSubmit, and other hooks. You can choose range values. Returns first and last button values.
 
-![range menu](./docs/range-menu.png)
+![range menu](https://github.com/DrSmile444/telegraf-menu/raw/main/docs/range-menu.png)
 
 Code example:
 
