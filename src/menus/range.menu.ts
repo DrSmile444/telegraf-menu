@@ -1,31 +1,40 @@
 import { FORMATTING_EMOJIS } from '../const';
 import { GenericMenu } from '../generic-menu';
-import { DefaultCtx, MenuOptionPayload, RangeConfig, RangeState } from '../interfaces';
+import { DefaultCtx, MenuOption, RangeConfig, RangeState } from '../interfaces';
 import { KeyboardButton } from '../keyboard-button';
 
 
 export class RangeMenu<
     TCtx extends DefaultCtx = DefaultCtx,
-    TState extends RangeState = RangeState,
-> extends GenericMenu<TCtx, TState> {
-    constructor(private config: RangeConfig<TCtx, TState>) {
+    TState extends RangeState<TValue> = RangeState<any>,
+    TValue extends string = string,
+> extends GenericMenu<TCtx, TState, TValue> {
+    constructor(private config: RangeConfig<TCtx, TState, TValue>) {
         super(config);
     }
 
-    stateToMenu(state) {
+    stateToMenu(state: TState) {
         const allButtons = this.flatFilters;
         const newButtons: KeyboardButton<any>[] = allButtons.filter((button) => {
-            return state.from === button.value.value || state.to === button.value.value;
+            return state.from === button.value || state.to === button.value;
         });
 
         return newButtons.filter(Boolean);
     }
 
-    menuToState(menu): RangeState {
-        const newState: { [key: string]: any | any[] } = {};
+    menuToState(menu: TValue[]): RangeState {
+        const newState: RangeState = {
+            from: menu[0],
+            to: menu[1],
+        };
 
-        newState.from = menu[0].value;
-        newState.to = menu[1].value;
+        if (!newState.from && +newState.from !== 0) {
+            delete newState.from;
+        }
+
+        if (!newState.to && +newState.to !== 0) {
+            delete newState.to;
+        }
 
         Object.keys(newState).forEach((key) => {
             const value = newState[key];
@@ -37,7 +46,7 @@ export class RangeMenu<
         return newState;
     }
 
-    onActiveButton(ctx: TCtx, activeButton: MenuOptionPayload) {
+    onActiveButton(ctx: TCtx, activeButton: MenuOption<TValue>) {
         const {
             activeButtonIndex,
             firstButtonIndex,
@@ -46,9 +55,9 @@ export class RangeMenu<
             lastButton,
         } = this.getRangeButtonIndexes(activeButton);
 
-        let activeButtons = this.evenRange
-            ? [firstButton, activeButton]
-            : [activeButton, lastButton];
+        let activeButtons: TValue[] = this.evenRange
+            ? [firstButton, activeButton.value]
+            : [activeButton.value, lastButton];
         activeButtons = activeButtons.filter(Boolean);
 
         if (this.evenRange && activeButtonIndex < firstButtonIndex || !this.evenRange && activeButtonIndex > lastButtonIndex) {
@@ -59,11 +68,11 @@ export class RangeMenu<
         super.toggleActiveButton(ctx, activeButtons);
     }
 
-    formatButtonLabel(ctx: TCtx, button: KeyboardButton<MenuOptionPayload>) {
+    formatButtonLabel(ctx: TCtx, button: KeyboardButton<TValue>) {
         const {RANGE_FORMATTING} = FORMATTING_EMOJIS;
         const {label, isDefaultActiveButton, isActiveButton} = this.getButtonLabelInfo(ctx, button);
 
-        const { activeButtonIndex, firstButtonIndex, lastButtonIndex } = this.getRangeButtonIndexes(button.value);
+        const { activeButtonIndex, firstButtonIndex, lastButtonIndex } = this.getRangeButtonIndexes(button);
         const isButtonInRange = activeButtonIndex >= firstButtonIndex && activeButtonIndex <= lastButtonIndex;
         const isCurrentButton = this.evenRange && activeButtonIndex === lastButtonIndex ||
             !this.evenRange && activeButtonIndex === firstButtonIndex;
@@ -80,28 +89,28 @@ export class RangeMenu<
     /**
      * Returns active, first, and last button indexes and these buttons.
      * */
-    private getRangeButtonIndexes(currentButton: MenuOptionPayload) {
+    private getRangeButtonIndexes(currentButton: KeyboardButton<TValue> | MenuOption<TValue>) {
         const allButtons = this.flatFilters;
         const firstButton = this.activeButtons[0];
         const lastButton = this.activeButtons[1];
 
-        const firstDefault = allButtons.findIndex((button) => !!button.value.default);
+        const firstDefault = allButtons.findIndex((button) => !!button.isDefault);
 
         const activeButtonIndex = allButtons
-            .findIndex((button) => button.value.value === currentButton.value);
+            .findIndex((button) => button.value === currentButton.value);
 
         const firstButtonIndex = allButtons
             .findIndex((button) => {
                 return firstButton
-                    ? button.value.value === firstButton.value
-                    : !!button.value.default;
+                    ? button.value === firstButton
+                    : !!button.isDefault;
             });
 
         const lastButtonIndex = allButtons
             .findIndex((button, index) => {
                 return lastButton
-                    ? button.value.value === lastButton.value
-                    : !!button.value.default && firstDefault !== index;
+                    ? button.value === lastButton
+                    : !!button.isDefault && firstDefault !== index;
             });
 
         return {

@@ -1,10 +1,10 @@
 import { GenericMenu } from '../generic-menu';
-import { DefaultCtx, MenuOptionPayload, RegularMenuConfig } from '../interfaces';
+import { DefaultCtx, MenuOption, RegularMenuConfig } from '../interfaces';
 import { KeyboardButton } from '../keyboard-button';
 
 
-export class RegularMenu<TCtx extends DefaultCtx = DefaultCtx> extends GenericMenu<TCtx, string> {
-    constructor(private config: RegularMenuConfig<TCtx>) {
+export class RegularMenu<TCtx extends DefaultCtx = DefaultCtx, TValue extends string = string> extends GenericMenu<TCtx, string, TValue> {
+    constructor(private config: RegularMenuConfig<TCtx, TValue>) {
         super(config);
     }
 
@@ -12,16 +12,16 @@ export class RegularMenu<TCtx extends DefaultCtx = DefaultCtx> extends GenericMe
         return [];
     }
 
-    menuToState(menu): string {
-        return menu[0].value;
+    menuToState(menu: TValue[]): string {
+        return menu[0];
     }
 
-    onActiveButton(ctx: TCtx, activeButton: MenuOptionPayload) {
-        const activeButtons = [activeButton];
+    onActiveButton(ctx: TCtx, activeButton: MenuOption<TValue>) {
+        const activeButtons = [activeButton.value];
         super.toggleActiveButton(ctx, activeButtons);
     }
 
-    formatButtonLabel(ctx: TCtx, button: KeyboardButton<MenuOptionPayload>) {
+    formatButtonLabel(ctx: TCtx, button: KeyboardButton<TValue>) {
         const {label} = super.getButtonLabelInfo(ctx, button);
         return label;
     }

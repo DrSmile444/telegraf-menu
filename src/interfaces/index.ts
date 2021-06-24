@@ -10,11 +10,12 @@ export interface GenericConfig<
     TCtx extends DefaultCtx = DefaultCtx,
     TState extends GenericState = GenericState,
     TMenu extends GenericMenu = GenericMenu,
+    TValue extends string = string,
 > {
     action: string;
     message: string;
     submitMessage?: string;
-    filters: MenuFilters | MenuFilters[];
+    filters: MenuFilters<TValue> | MenuFilters<TValue>[];
     state?: TState;
     debug?: boolean;
     replaceable?: boolean;
@@ -26,53 +27,53 @@ export interface GenericConfig<
     onSubmitUpdater?(submitCtx: MenuContextUpdate<TCtx>, messageId: number, state: TState): any;
 }
 
-export interface RegularMenuConfig<TCtx extends DefaultCtx = DefaultCtx> extends
+export interface RegularMenuConfig<TCtx extends DefaultCtx = DefaultCtx, TValue extends string = string> extends
     Omit<
-        GenericConfig<TCtx, string, RegularMenu<TCtx>>,
-        'state' | 'onSubmit' | 'beforeChange' | 'onSubmitUpdater' | 'submitMessage'
-    > {}
+        GenericConfig<TCtx, string, RegularMenu<TCtx, TValue>, TValue>,
+        'state' | 'onSubmit' | 'beforeChange' | 'onSubmitUpdater' | 'submitMessage' | 'onChange'
+    > {
+    onChange?(changeCtx: MenuContextUpdate<TCtx>, state: TValue): any;
+}
 
-export interface RadioConfig<TCtx extends DefaultCtx = DefaultCtx, TState extends string = string> extends
-    GenericConfig<TCtx, TState, RadioMenu<TCtx, TState>> {}
+export interface RadioConfig<TCtx extends DefaultCtx = DefaultCtx, TState extends string = string, TValue extends string = string> extends
+    GenericConfig<TCtx, TState, RadioMenu<TCtx, TState>, TValue> {}
 
-export interface RangeConfig<TCtx extends DefaultCtx = DefaultCtx, TState extends RangeState = RangeState> extends
-    GenericConfig<TCtx, TState, RangeMenu<TCtx, TState>> {}
+export interface RangeConfig<
+    TCtx extends DefaultCtx = DefaultCtx,
+    TState extends RangeState<TValue> = RangeState<any>,
+    TValue extends string = string,
+> extends GenericConfig<TCtx, TState, RangeMenu<TCtx, TState>, TValue> {}
 
-export interface CheckboxConfig<TCtx extends DefaultCtx = DefaultCtx, TState extends string[] = string[]> extends
-    GenericConfig<TCtx, TState, CheckboxMenu<TCtx, TState>> {}
+export interface CheckboxConfig<
+    TCtx extends DefaultCtx = DefaultCtx,
+    TState extends string[] = string[],
+    TValue extends string = string,
+> extends GenericConfig<TCtx, TState, CheckboxMenu<TCtx, TState>, TValue> {}
 
-export type MenuFilters = KeyboardButton<MenuOptionPayload>[];
+export type MenuFilters<TValue extends string = string> = KeyboardButton<TValue>[];
 
-export interface RangeState {
-    from?: string;
-    to?: string;
+export interface RangeState<TValue extends string | number = string> {
+    from?: TValue;
+    to?: TValue;
 }
 
 /**
  * Full types
  * */
 
-export interface MenuOption {
+export interface MenuOption<TValue> {
     action: string;
-    payload: MenuOptionPayload;
-}
-
-export interface MenuOptionPayload {
-    value: string;
-    default?: boolean;
+    value: TValue;
+    isDefault?: boolean;
 }
 
 /**
  * Short types for callback data
  * */
 
-export interface MenuOptionShort {
+export interface MenuOptionShort<TValue> {
     a: string;
-    p: MenuOptionPayloadShort;
-}
-
-export interface MenuOptionPayloadShort {
-    v: string;
+    v: TValue;
     d?: 1 | 0;
 }
 
@@ -85,8 +86,8 @@ export type DefaultCtx = NarrowedContext<Context<any> & { match: RegExpExecArray
     i18n?: I18nContext;
 };
 
-export type MenuContextUpdate<TCtx extends DefaultCtx = DefaultCtx> = {
+export type MenuContextUpdate<TCtx extends DefaultCtx = DefaultCtx, TValue extends string = string> = {
     state: {
-        callbackData: MenuOption;
+        callbackData: MenuOption<TValue>;
     };
 } & TCtx;

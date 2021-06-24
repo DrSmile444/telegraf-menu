@@ -4,7 +4,7 @@ import { CurrentCtx, LanguageType, MenuAction } from '../interfaces';
 import { initStartMenu } from './start.menu';
 
 export const initLanguageMenu = (ctx: CurrentCtx) => {
-    new RadioMenu<CurrentCtx>(
+    new RadioMenu<CurrentCtx, LanguageType>(
         {
             action: MenuAction.LANGUAGE,
             message: 'menu.language.start',
@@ -15,7 +15,7 @@ export const initLanguageMenu = (ctx: CurrentCtx) => {
             replaceable: true,
             menuGetter: (menuCtx) => menuCtx.session.keyboardMenu,
             menuSetter: (menuCtx, menu) => menuCtx.session.keyboardMenu = menu,
-            beforeChange(changeCtx, language: LanguageType) {
+            beforeChange(changeCtx, language) {
                 changeCtx.session.language = language;
                 changeCtx.i18n.locale(language);
             },

@@ -8,7 +8,6 @@ import {
     MenuContextUpdate,
     MenuFilters,
     MenuOption,
-    MenuOptionPayload,
     MenuOptionShort,
 } from './interfaces';
 import { KeyboardButton } from './keyboard-button';
@@ -18,6 +17,7 @@ import { getCtxInfo, reduceArray } from './utils';
 export abstract class GenericMenu<
     TCtx extends DefaultCtx = DefaultCtx,
     TState extends GenericState = GenericState,
+    TValue extends string = string,
 > {
     private get debugMessage() {
         return !!this.genericConfig.debug ?
@@ -29,37 +29,33 @@ export abstract class GenericMenu<
     state: TState;
     replaced: boolean = false;
 
-    protected activeButtons: MenuOptionPayload[] = [];
+    protected activeButtons: TValue[] = [];
     protected evenRange: boolean = false;
     private deleted: boolean = false;
 
-    static remapCompactToFull(options: MenuOptionShort): MenuOption {
-        const newOption = {
+    static remapCompactToFull<SValue>(options: MenuOptionShort<SValue>): MenuOption<SValue> {
+        const newOption: MenuOption<SValue> = {
             action: options.a,
-            payload: {
-                default: !!options.p.d,
-                value: options.p.v,
-            },
+            value: options.v,
+            isDefault: !!options.d,
         };
 
-        if (!options.p.d) {
-            delete newOption.payload.default;
+        if (!options.d) {
+            delete newOption.isDefault;
         }
 
         return newOption;
     }
 
-    static remapFullToCompact(options: MenuOption): MenuOptionShort {
-        const newOption = {
+    static remapFullToCompact<SValue>(options: MenuOption<SValue>): MenuOptionShort<SValue> {
+        const newOption: MenuOptionShort<SValue> = {
             a: options.action,
-            p: {
-                d: Number(!!options.payload?.default) as 1 | 0,
-                v: options.payload?.value,
-            },
+            v: options?.value,
+            d: Number(!!options?.isDefault) as 1 | 0,
         };
 
-        if (!options.payload?.default) {
-            delete newOption.p.d;
+        if (!options?.isDefault) {
+            delete newOption.d;
         }
 
         return newOption;
@@ -95,15 +91,15 @@ export abstract class GenericMenu<
         }
     }
 
-    abstract onActiveButton(ctx: TCtx, activeButton: MenuOptionPayload);
-    abstract formatButtonLabel(ctx: TCtx, button: KeyboardButton<MenuOptionPayload>);
-    abstract stateToMenu(state: TState): KeyboardButton<MenuOptionPayload>[];
-    abstract menuToState(menu: MenuOptionPayload[]);
+    abstract onActiveButton(ctx: TCtx, activeButton: MenuOption<TValue>);
+    abstract formatButtonLabel(ctx: TCtx, button: KeyboardButton<TValue>);
+    abstract stateToMenu(state: TState): KeyboardButton<TValue>[];
+    abstract menuToState(menu: TValue[]);
 
-    get flatFilters(): MenuFilters {
+    get flatFilters(): MenuFilters<TValue> {
         return Array.isArray(this.genericConfig.filters[0])
-            ? (this.genericConfig.filters as MenuFilters[]).reduce(reduceArray)
-            : this.genericConfig.filters as MenuFilters;
+            ? (this.genericConfig.filters as MenuFilters<TValue>[]).reduce(reduceArray)
+            : this.genericConfig.filters as MenuFilters<TValue>;
     }
 
     /**
@@ -161,7 +157,7 @@ export abstract class GenericMenu<
         this.genericConfig.menuSetter?.(ctx, this as any);
     }
 
-    protected toggleActiveButton(ctx: TCtx, activeButtons: MenuOptionPayload[]) {
+    protected toggleActiveButton(ctx: TCtx, activeButtons: TValue[]) {
         const newState = this.menuToState(activeButtons);
         this.activeButtons = activeButtons;
         this.state = newState;
@@ -174,12 +170,12 @@ export abstract class GenericMenu<
     /**
      * Creates the label depending on button state and menu type.
      * */
-    protected getButtonLabelInfo(ctx: TCtx, button: KeyboardButton<MenuOptionPayload>) {
+    protected getButtonLabelInfo(ctx: TCtx, button: KeyboardButton<TValue>) {
         const isDefaultActiveButton = this.activeButtons
-            .length === 0 && !!button.value.default;
+            .length === 0 && !!button.isDefault;
 
         const isActiveButton = this.activeButtons.some((activeButton) => {
-            return deepEqual(activeButton, button.value);
+            return activeButton === button.value;
         });
 
         console.log(this.activeButtons, button);
@@ -215,8 +211,8 @@ export abstract class GenericMenu<
             return;
         }
 
-        const payload = ctx.state.callbackData?.payload;
-        if (payload?.value === '_local_submit') {
+        const payloadButton = ctx.state.callbackData as MenuOption<TValue>;
+        if (payloadButton?.value === '_local_submit') {
             this.genericConfig.onSubmit?.(ctx, this.state);
             this.deleted = true;
 
@@ -228,7 +224,7 @@ export abstract class GenericMenu<
             return;
         }
 
-        this.onActiveButton(ctx as any, ctx.state.callbackData.payload);
+        this.onActiveButton(ctx as any, ctx.state.callbackData as MenuOption<TValue>);
         this.genericConfig.onChange?.(ctx, this.state);
     }
 
@@ -266,15 +262,16 @@ export abstract class GenericMenu<
      * Formats and creates keyboard buttons from the config
      * */
     private getKeyboard(ctx: TCtx) {
-        const filters: MenuFilters[] = Array.isArray(this.genericConfig.filters[0])
-            ? this.genericConfig.filters as MenuFilters[] :
-            [this.genericConfig.filters] as MenuFilters[];
+        const filters: MenuFilters<TValue>[] = Array.isArray(this.genericConfig.filters[0])
+            ? this.genericConfig.filters as MenuFilters<TValue>[] :
+            [this.genericConfig.filters] as MenuFilters<TValue>[];
 
         const buttons = filters.map((row) => {
             return row.map((button) => {
                 const shortButton = GenericMenu.remapFullToCompact({
                     action: this.genericConfig.action,
-                    payload: button.value,
+                    value: button.value,
+                    isDefault: button.isDefault,
                 });
 
                 return Markup.button.callback(this.formatButtonLabel(ctx, button), JSON.stringify(shortButton));
@@ -284,7 +281,7 @@ export abstract class GenericMenu<
         if (this.genericConfig.onSubmit || this.genericConfig.submitMessage || this.genericConfig.onSubmitUpdater) {
             const shortButton = GenericMenu.remapFullToCompact({
                 action: this.genericConfig.action,
-                payload: { value: '_local_submit' },
+                value: '_local_submit',
             });
 
             const callbackButton = Markup.button.callback(this.getSubmitMessage(ctx), JSON.stringify(shortButton));

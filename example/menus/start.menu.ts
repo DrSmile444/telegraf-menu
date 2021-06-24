@@ -6,7 +6,7 @@ import { initLanguageMenu } from './language.menu';
 import { initVideoFiltersMenu } from './video-filters.menu';
 
 export const initStartMenu = (ctx: CurrentCtx) => {
-    new RegularMenu<CurrentCtx>(
+    new RegularMenu<CurrentCtx, MenuAction>(
         {
             action: MenuAction.START,
             message: 'menu.start.start',

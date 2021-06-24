@@ -1,17 +1,15 @@
-// @ts-ignore
-import * as deepEqual from 'deep-equal';
-
 import { FORMATTING_EMOJIS } from '../const';
 import { GenericMenu } from '../generic-menu';
-import { CheckboxConfig, DefaultCtx, MenuOptionPayload } from '../interfaces';
+import { CheckboxConfig, DefaultCtx, MenuOption } from '../interfaces';
 import { KeyboardButton } from '../keyboard-button';
 
 
 export class CheckboxMenu<
     TCtx extends DefaultCtx = DefaultCtx,
     TState extends string[] = string[],
-> extends GenericMenu<TCtx, TState> {
-    constructor(private config: CheckboxConfig<TCtx, TState>) {
+    TValue extends string = string,
+> extends GenericMenu<TCtx, TState, TValue> {
+    constructor(private config: CheckboxConfig<TCtx, TState, TValue>) {
         super(config);
     }
 
@@ -19,13 +17,13 @@ export class CheckboxMenu<
         const allButtons = this.flatFilters;
         const newButtons: KeyboardButton<any>[] = [];
 
-        const currentState = Array.isArray(state)
-            ? state
+        const currentState: TValue[] = Array.isArray(state)
+            ? state as TValue[]
             : [];
 
         if (currentState.length) {
             const checkboxButton = allButtons
-                .filter((button) => currentState.includes(button.value.value));
+                .filter((button) => currentState.includes(button.value));
 
             newButtons.push(...checkboxButton);
         }
@@ -33,17 +31,19 @@ export class CheckboxMenu<
         return newButtons.filter(Boolean);
     }
 
-    menuToState(menu): string[] {
-        return menu.map((button) => button.value);
+    menuToState(menu: TValue[]): string[] {
+        return menu.map((button) => button);
     }
 
-    onActiveButton(ctx: TCtx, activeButton: MenuOptionPayload) {
-        const activeButtons = this.stateToMenu(this.state).map((button) => button.value);
+    onActiveButton(ctx: TCtx, activeButton: MenuOption<TValue>) {
+        console.log('>>>>>>> activeButton', activeButton);
+
+        const activeButtons: TValue[] = this.stateToMenu(this.state).map((button) => button.value);
 
         let buttonIndex = null;
 
         activeButtons.some((button, index) => {
-            const isButtonInList = deepEqual(button, activeButton);
+            const isButtonInList = button === activeButton.value;
 
             if (isButtonInList) {
                 buttonIndex = index;
@@ -54,13 +54,13 @@ export class CheckboxMenu<
         if (buttonIndex || buttonIndex === 0) {
             activeButtons.splice(buttonIndex, 1);
         } else {
-            activeButtons.push(activeButton);
+            activeButtons.push(activeButton.value);
         }
 
         super.toggleActiveButton(ctx, activeButtons);
     }
 
-    formatButtonLabel(ctx: TCtx, button: KeyboardButton<MenuOptionPayload>) {
+    formatButtonLabel(ctx: TCtx, button: KeyboardButton<TValue>) {
         const {CHECKBOX_FORMATTING} = FORMATTING_EMOJIS;
         const {label, isActiveButton} = super.getButtonLabelInfo(ctx, button);
 
