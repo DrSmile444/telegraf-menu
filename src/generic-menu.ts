@@ -1,7 +1,5 @@
 // @ts-ignore
 import * as deepEqual from 'deep-equal';
-import { BehaviorSubject } from 'rxjs';
-import { skip } from 'rxjs/operators';
 import { Markup } from 'telegraf';
 
 import {
@@ -21,15 +19,6 @@ export abstract class GenericMenu<
     Ctx extends DefaultCtx = DefaultCtx,
     State extends GenericState = GenericState,
 > {
-    /**
-     * RXJS Observable with state changes
-     * */
-    get state$() {
-        return this._state$
-            .asObservable()
-            .pipe(skip(1));
-    }
-
     private get debugMessage() {
         return !!this.genericConfig.debug ?
             '\n\n• Debug: ' + JSON.stringify(this.state) + '\n• Message ID: ' + this.messageId :
@@ -43,7 +32,6 @@ export abstract class GenericMenu<
     protected activeButtons: MenuOptionPayload[] = [];
     protected evenRange: boolean = false;
     private deleted: boolean = false;
-    private readonly _state$: BehaviorSubject<State> = new BehaviorSubject<State>(null);
 
     static remapCompactToFull(options: MenuOptionShort): MenuOption {
         const newOption = {
@@ -123,8 +111,6 @@ export abstract class GenericMenu<
      * */
     updateState(state: State, ctx?: Ctx) {
         this.activeButtons = this.stateToMenu(state).map((button) => button.value);
-
-        this._state$.next(state);
         this.state = state;
 
         if (ctx) {
@@ -178,7 +164,6 @@ export abstract class GenericMenu<
     protected toggleActiveButton(ctx: Ctx, activeButtons: MenuOptionPayload[]) {
         const newState = this.menuToState(activeButtons);
         this.activeButtons = activeButtons;
-        this._state$.next(newState);
         this.state = newState;
         this.evenRange = !this.evenRange;
         this.genericConfig.beforeChange?.(ctx as any, this.state);
