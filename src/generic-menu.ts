@@ -1,5 +1,3 @@
-// @ts-ignore
-import * as deepEqual from 'deep-equal';
 import { Markup } from 'telegraf';
 
 import {

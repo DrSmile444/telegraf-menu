@@ -1,6 +1,6 @@
 import { I18nContext } from '@edjopato/telegraf-i18n';
 
-import { DefaultCtx, I18nOverride, GenericMenu } from '../../src';
+import { DefaultCtx, GenericMenu } from '../../src';
 
 export enum MenuAction {
     BASKET = 'basket',
