@@ -1,4 +1,4 @@
-import { KeyboardButton, MenuFilters, MenuGroupFilters } from '../../src';
+import { KeyboardButton, MenuFilters } from '../../src';
 import { LanguageType, MenuAction } from '../interfaces';
 
 export const VIDEO_FILTERS: MenuFilters = [
@@ -22,7 +22,7 @@ export const FRUITS_FILTERS: MenuFilters[] = [
     ],
 ];
 
-export const LANGUAGE_FILTERS: MenuGroupFilters<'language'> = [
+export const LANGUAGE_FILTERS: MenuFilters = [
     new KeyboardButton(LanguageType.EN, { value: LanguageType.EN, default: true }),
     new KeyboardButton(LanguageType.RU, { value: LanguageType.RU }),
     new KeyboardButton(LanguageType.UA, { value: LanguageType.UA }),

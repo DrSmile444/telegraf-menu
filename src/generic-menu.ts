@@ -9,7 +9,6 @@ import {
     GenericConfig, GenericState,
     MenuContextUpdate,
     MenuFilters,
-    MenuGroupFilters,
     MenuOption,
     MenuOptionPayload,
     MenuOptionShort,
@@ -21,7 +20,6 @@ import { getCtxInfo, reduceArray } from './utils';
 export abstract class GenericMenu<
     Ctx extends DefaultCtx = DefaultCtx,
     State extends GenericState = GenericState,
-    Group extends string = never,
 > {
     /**
      * RXJS Observable with state changes
@@ -42,12 +40,12 @@ export abstract class GenericMenu<
     state: State;
     replaced: boolean = false;
 
-    protected activeButtons: MenuOptionPayload<Group>[] = [];
+    protected activeButtons: MenuOptionPayload[] = [];
     protected evenRange: boolean = false;
     private deleted: boolean = false;
     private readonly _state$: BehaviorSubject<State> = new BehaviorSubject<State>(null);
 
-    static remapCompactToFull<SGroup>(options: MenuOptionShort<SGroup>): MenuOption<SGroup> {
+    static remapCompactToFull(options: MenuOptionShort): MenuOption {
         const newOption = {
             action: options.a,
             payload: {
@@ -63,7 +61,7 @@ export abstract class GenericMenu<
         return newOption;
     }
 
-    static remapFullToCompact<SGroup>(options: MenuOption<SGroup>): MenuOptionShort<SGroup> {
+    static remapFullToCompact(options: MenuOption): MenuOptionShort {
         const newOption = {
             a: options.action,
             p: {
@@ -86,7 +84,7 @@ export abstract class GenericMenu<
         menuGetter: (ctx: Ctx) => GenericMenu,
         initMenu: (ctx: Ctx) => any,
     ) {
-        return (ctx: MenuContextUpdate<Ctx, never>) => {
+        return (ctx: MenuContextUpdate<Ctx>) => {
             const oldMenu = menuGetter(ctx);
             if (oldMenu?.onAction) {
                 oldMenu.onAction(ctx);
@@ -102,22 +100,22 @@ export abstract class GenericMenu<
     }
 
     constructor(
-        private genericConfig: GenericConfig<Ctx, State, Group>,
+        private genericConfig: GenericConfig<Ctx, State>,
     ) {
         if (genericConfig.state) {
             this.updateState(genericConfig.state);
         }
     }
 
-    abstract onActiveButton(ctx: Ctx, activeButton: MenuOptionPayload<Group>);
-    abstract formatButtonLabel(ctx: Ctx, button: KeyboardButton<MenuOptionPayload<Group>>);
-    abstract stateToMenu(state: State): KeyboardButton<MenuOptionPayload<never>>[];
-    abstract menuToState(menu: MenuOptionPayload<Group>[]);
+    abstract onActiveButton(ctx: Ctx, activeButton: MenuOptionPayload);
+    abstract formatButtonLabel(ctx: Ctx, button: KeyboardButton<MenuOptionPayload>);
+    abstract stateToMenu(state: State): KeyboardButton<MenuOptionPayload>[];
+    abstract menuToState(menu: MenuOptionPayload[]);
 
-    get flatFilters(): MenuGroupFilters<Group> | MenuFilters {
+    get flatFilters(): MenuFilters {
         return Array.isArray(this.genericConfig.filters[0])
-            ? (this.genericConfig.filters as MenuGroupFilters<Group>[]).reduce(reduceArray)
-            : this.genericConfig.filters as MenuGroupFilters<Group>;
+            ? (this.genericConfig.filters as MenuFilters[]).reduce(reduceArray)
+            : this.genericConfig.filters as MenuFilters;
     }
 
     /**
@@ -177,7 +175,7 @@ export abstract class GenericMenu<
         this.genericConfig.menuSetter?.(ctx, this as any);
     }
 
-    protected toggleActiveButton(ctx: Ctx, activeButtons: MenuOptionPayload<Group>[]) {
+    protected toggleActiveButton(ctx: Ctx, activeButtons: MenuOptionPayload[]) {
         const newState = this.menuToState(activeButtons);
         this.activeButtons = activeButtons;
         this._state$.next(newState);
@@ -191,7 +189,7 @@ export abstract class GenericMenu<
     /**
      * Creates the label depending on button state and menu type.
      * */
-    protected getButtonLabelInfo(ctx: Ctx, button: KeyboardButton<MenuOptionPayload<Group>>) {
+    protected getButtonLabelInfo(ctx: Ctx, button: KeyboardButton<MenuOptionPayload>) {
         const isDefaultActiveButton = this.activeButtons
             .length === 0 && !!button.value.default;
 
@@ -219,7 +217,7 @@ export abstract class GenericMenu<
         return ctx.i18n?.t(this.genericConfig.submitMessage) || 'Submit';
     }
 
-    private onAction(ctx: MenuContextUpdate<Ctx, Group>) {
+    private onAction(ctx: MenuContextUpdate<Ctx>) {
         const messageId = ctx.callbackQuery?.message?.message_id;
         /**
          * If clicked on old inactive keyboard
@@ -283,9 +281,9 @@ export abstract class GenericMenu<
      * Formats and creates keyboard buttons from the config
      * */
     private getKeyboard(ctx: Ctx) {
-        const filters: MenuGroupFilters<Group>[] | MenuFilters[] = Array.isArray(this.genericConfig.filters[0])
-            ? this.genericConfig.filters as MenuGroupFilters<Group>[] | MenuFilters[] :
-            [this.genericConfig.filters] as MenuGroupFilters<Group>[] | MenuFilters[];
+        const filters: MenuFilters[] = Array.isArray(this.genericConfig.filters[0])
+            ? this.genericConfig.filters as MenuFilters[] :
+            [this.genericConfig.filters] as MenuFilters[];
 
         const buttons = filters.map((row) => {
             return row.map((button) => {
