@@ -3,7 +3,7 @@ import * as path from 'path';
 import { Telegraf } from 'telegraf';
 import * as LocalSession from 'telegraf-session-local';
 
-import { GenericMenu, parseCallbackData } from '../src';
+import { GenericMenu } from '../src';
 import { CurrentCtx, MenuAction } from './interfaces';
 import { initBasketMenu, initLanguageMenu, initStartMenu, initVideoFiltersMenu } from './menus';
 import { initSession } from './middlewares';
@@ -27,7 +27,7 @@ bot.use(initSession);
 /**
  * Required callback parser
  * */
-bot.use(parseCallbackData);
+bot.use(GenericMenu.middleware());
 
 /**
  * Menu example

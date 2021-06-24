@@ -1,4 +1,4 @@
-import { Markup } from 'telegraf';
+import { Markup, MiddlewareFn } from 'telegraf';
 
 import {
     DefaultCtx,
@@ -9,6 +9,7 @@ import {
     MenuOptionShort,
 } from './interfaces';
 import { KeyboardButton } from './keyboard-button';
+import { parseCallbackData } from './middlewares/parse-callback-data';
 import { getCtxInfo, reduceArray } from './utils';
 
 
@@ -57,6 +58,10 @@ export abstract class GenericMenu<
         }
 
         return newOption;
+    }
+
+    static middleware(): MiddlewareFn<DefaultCtx> {
+        return parseCallbackData;
     }
 
     /**
@@ -199,6 +204,10 @@ export abstract class GenericMenu<
     }
 
     private onAction(ctx: MenuContextUpdate<TCtx>) {
+        if (!ctx.state.callbackData) {
+            throw new Error('TelegrafMenu Error: You forgot to add middleware parser. Add following code to your bot:\n\n+++ bot.use(GenericMenu.middleware());\n');
+        }
+
         const messageId = ctx.callbackQuery?.message?.message_id;
         /**
          * If clicked on old inactive keyboard
