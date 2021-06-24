@@ -13,9 +13,9 @@ export class CheckboxMenu<
         super(config);
     }
 
-    stateToMenu(state) {
+    stateToMenu(state: string | string[]) {
         const allButtons = this.flatFilters;
-        const newButtons: KeyboardButton<any>[] = [];
+        const newButtons: KeyboardButton<TValue>[] = [];
 
         const currentState: TValue[] = Array.isArray(state)
             ? state as TValue[]
@@ -36,8 +36,6 @@ export class CheckboxMenu<
     }
 
     onActiveButton(ctx: TCtx, activeButton: MenuOption<TValue>) {
-        console.log('>>>>>>> activeButton', activeButton);
-
         const activeButtons: TValue[] = this.stateToMenu(this.state).map((button) => button.value);
 
         let buttonIndex = null;

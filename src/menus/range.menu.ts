@@ -15,7 +15,7 @@ export class RangeMenu<
 
     stateToMenu(state: TState) {
         const allButtons = this.flatFilters;
-        const newButtons: KeyboardButton<any>[] = allButtons.filter((button) => {
+        const newButtons: KeyboardButton<TValue>[] = allButtons.filter((button) => {
             return state.from === button.value || state.to === button.value;
         });
 

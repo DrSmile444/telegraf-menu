@@ -119,7 +119,7 @@ export abstract class GenericMenu<
      * Redraws the old menu
      * */
     async sendMenu(ctx: TCtx) {
-        const { chatId } = getCtxInfo(ctx as any);
+        const { chatId } = getCtxInfo(ctx);
         ctx.telegram.sendChatAction(chatId, 'typing');
 
         const sendMessage = async () => {
@@ -154,7 +154,7 @@ export abstract class GenericMenu<
             await sendMessage();
         }
 
-        this.genericConfig.menuSetter?.(ctx, this as any);
+        this.genericConfig.menuSetter?.(ctx, this);
     }
 
     protected toggleActiveButton(ctx: TCtx, activeButtons: TValue[]) {
@@ -162,7 +162,7 @@ export abstract class GenericMenu<
         this.activeButtons = activeButtons;
         this.state = newState;
         this.evenRange = !this.evenRange;
-        this.genericConfig.beforeChange?.(ctx as any, this.state);
+        this.genericConfig.beforeChange?.(ctx, this.state);
 
         this.redrawMenu(ctx);
     }
@@ -177,8 +177,6 @@ export abstract class GenericMenu<
         const isActiveButton = this.activeButtons.some((activeButton) => {
             return activeButton === button.value;
         });
-
-        console.log(this.activeButtons, button);
 
         const label = ctx.i18n?.t(button.label) || button.label;
 
@@ -205,7 +203,7 @@ export abstract class GenericMenu<
          * */
         if (!this.messageId) {
             ctx.deleteMessage(messageId).catch(() => {});
-            this.sendMenu(ctx as any);
+            this.sendMenu(ctx);
         } else if (this.messageId !== messageId) {
             ctx.deleteMessage(messageId).catch(() => {});
             return;
@@ -224,7 +222,7 @@ export abstract class GenericMenu<
             return;
         }
 
-        this.onActiveButton(ctx as any, ctx.state.callbackData as MenuOption<TValue>);
+        this.onActiveButton(ctx, ctx.state.callbackData as MenuOption<TValue>);
         this.genericConfig.onChange?.(ctx, this.state);
     }
 
@@ -233,7 +231,7 @@ export abstract class GenericMenu<
      * Updates message and keyboard.
      * */
     private redrawMenu(ctx: TCtx) {
-        const { chatId } = getCtxInfo(ctx as any);
+        const { chatId } = getCtxInfo(ctx);
 
         /**
          * Replaced flag sets after the call, so we need to delay it

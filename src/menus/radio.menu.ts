@@ -10,7 +10,7 @@ export class RadioMenu<
     TValue extends string = string,
     > extends GenericMenu<TCtx, TState, TValue> {
     constructor(private config: RadioConfig<TCtx, TState, TValue>) {
-        super(config as any);
+        super(config);
     }
 
     stateToMenu(state: string): KeyboardButton<TValue>[] {
@@ -28,7 +28,6 @@ export class RadioMenu<
     }
 
     onActiveButton(ctx: TCtx, activeButton: MenuOption<TValue>) {
-        console.log('>>>>>>> activeButton', activeButton);
         const activeButtons = [activeButton.value];
         super.toggleActiveButton(ctx, activeButtons);
     }
