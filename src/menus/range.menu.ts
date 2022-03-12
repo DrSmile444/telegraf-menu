@@ -10,7 +10,10 @@ export class RangeMenu<
     TValue extends string = string,
 > extends GenericMenu<TCtx, TState, TValue> {
     constructor(private config: RangeConfig<TCtx, TState, TValue>) {
-        super(config);
+        super({
+            ...config,
+            formatting: Object.assign(FORMATTING_EMOJIS.RANGE_FORMATTING, config.formatting ?? {}),
+        });
     }
 
     stateToMenu(state: TState) {
@@ -69,7 +72,6 @@ export class RangeMenu<
     }
 
     formatButtonLabel(ctx: TCtx, button: KeyboardButton<TValue>) {
-        const {RANGE_FORMATTING} = FORMATTING_EMOJIS;
         const {label, isDefaultActiveButton, isActiveButton} = this.getButtonLabelInfo(ctx, button);
 
         const { activeButtonIndex, firstButtonIndex, lastButtonIndex } = this.getRangeButtonIndexes(button);
@@ -78,12 +80,12 @@ export class RangeMenu<
             !this.evenRange && activeButtonIndex === firstButtonIndex;
 
         if (isCurrentButton) {
-            return RANGE_FORMATTING.current + ' ' + label;
+            return this.genericConfig.formatting.current + ' ' + label;
         }
 
         return isActiveButton || isButtonInRange || isDefaultActiveButton ?
-            RANGE_FORMATTING.active + ' ' + label :
-            RANGE_FORMATTING.disabled + ' ' + label;
+            this.genericConfig.formatting.active + ' ' + label :
+            this.genericConfig.formatting.disabled + ' ' + label;
     }
 
     /**

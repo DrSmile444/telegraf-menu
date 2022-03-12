@@ -5,6 +5,12 @@ import { GenericMenu } from '../generic-menu';
 import { KeyboardButton } from '../keyboard-button';
 import { CheckboxMenu, RadioMenu, RangeMenu, RegularMenu } from '../menus';
 
+export interface MenuFormatting {
+    current?: string;
+    active?: string;
+    disabled?: string;
+}
+
 export type GenericState = string[] | string | Record<any, any>;
 export interface GenericConfig<
     TCtx extends DefaultCtx = DefaultCtx,
@@ -20,6 +26,7 @@ export interface GenericConfig<
     debug?: boolean;
     replaceable?: boolean;
     type?: unknown;
+    formatting?: MenuFormatting;
     menuGetter?(menuCtx: TCtx): GenericMenu;
     menuSetter?(menuCtx: TCtx, menu: TMenu): any;
     onChange?(changeCtx: MenuContextUpdate<TCtx>, state: TState): any;

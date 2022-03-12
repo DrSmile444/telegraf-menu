@@ -1,3 +1,4 @@
+import { FORMATTING_EMOJIS } from '../const';
 import { CheckboxConfig, DefaultCtx } from '../interfaces';
 import { KeyboardButton } from '../keyboard-button';
 import { CheckboxMenu } from './checkbox.menu';
@@ -13,7 +14,10 @@ export class CheckboxObjectMenu<
     private genericConfig: CheckboxConfig<TCtx, TState, TValue>;
 
     constructor(config: CheckboxConfig<TCtx, TState, TValue>) {
-        super(config);
+        super({
+            ...config,
+            formatting: Object.assign(FORMATTING_EMOJIS.CHECKBOX_FORMATTING, config.formatting ?? {}),
+        });
     }
 
     stateToMenu(state: TState) {
