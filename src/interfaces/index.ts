@@ -5,7 +5,7 @@ import { GenericMenu } from '../generic-menu';
 import { KeyboardButton } from '../keyboard-button';
 import { CheckboxMenu, RadioMenu, RangeMenu, RegularMenu } from '../menus';
 
-export type GenericState = string[] | string | object;
+export type GenericState = string[] | string | Record<any, any>;
 export interface GenericConfig<
     TCtx extends DefaultCtx = DefaultCtx,
     TState extends GenericState = GenericState,
@@ -19,6 +19,7 @@ export interface GenericConfig<
     state?: TState;
     debug?: boolean;
     replaceable?: boolean;
+    type?: unknown;
     menuGetter?(menuCtx: TCtx): GenericMenu;
     menuSetter?(menuCtx: TCtx, menu: TMenu): any;
     onChange?(changeCtx: MenuContextUpdate<TCtx>, state: TState): any;
@@ -46,9 +47,12 @@ export interface RangeConfig<
 
 export interface CheckboxConfig<
     TCtx extends DefaultCtx = DefaultCtx,
-    TState extends string[] = string[],
+    TState extends string[] | Record<any, any> = string[] | Record<any, any>,
     TValue extends string = string,
-> extends GenericConfig<TCtx, TState, CheckboxMenu<TCtx, TState>, TValue> {}
+    // @ts-ignore
+> extends GenericConfig<TCtx, TState, CheckboxMenu<TCtx, TState>, TValue> {
+    invertedSelection?: boolean;
+}
 
 export type MenuFilters<TValue extends string = string> = KeyboardButton<TValue>[];
 

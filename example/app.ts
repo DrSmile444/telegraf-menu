@@ -8,7 +8,7 @@ dotenv.config();
 
 import { GenericMenu } from '../src';
 import { CurrentCtx, MenuAction } from './interfaces';
-import { initBasketMenu, initLanguageMenu, initStartMenu, initVideoFiltersMenu } from './menus';
+import { initBasketMenu, initBasketObjectMenu, initLanguageMenu, initStartMenu, initVideoFiltersMenu } from './menus';
 import { initSession } from './middlewares';
 
 const bot = new Telegraf(process.env.BOT_TOKEN);
@@ -20,7 +20,7 @@ const i18n = new I18n({
     sessionName: 'session',
 });
 
-bot.use(Telegraf.log((log) => console.log('>>> Telegraf "' + new Date().toString() + '" :' + log)));
+// bot.use(Telegraf.log((log) => console.log('>>> Telegraf "' + new Date().toString() + '" :' + log)));
 bot.use(session.middleware());
 bot.use(i18n.middleware());
 bot.use(initSession);
@@ -45,6 +45,15 @@ bot.command(MenuAction.BASKET, initBasketMenu);
 bot.action(new RegExp(MenuAction.BASKET), GenericMenu.onAction(
     (ctx: CurrentCtx) => ctx.session.keyboardMenu,
     initBasketMenu,
+));
+
+/**
+ * Checkbox object example
+ * */
+bot.command(MenuAction.BASKET_OBJECT, initBasketObjectMenu);
+bot.action(new RegExp(MenuAction.BASKET_OBJECT), GenericMenu.onAction(
+    (ctx: CurrentCtx) => ctx.session.keyboardMenu,
+    initBasketObjectMenu,
 ));
 
 /**

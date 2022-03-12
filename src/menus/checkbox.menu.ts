@@ -13,11 +13,12 @@ export class CheckboxMenu<
         super(config);
     }
 
-    stateToMenu(state: string | string[]) {
+    stateToMenu(state: TState) {
         const allButtons = this.flatFilters;
         const newButtons: KeyboardButton<TValue>[] = [];
 
         const currentState: TValue[] = Array.isArray(state)
+            // @ts-ignore
             ? state as TValue[]
             : [];
 
@@ -31,8 +32,8 @@ export class CheckboxMenu<
         return newButtons.filter(Boolean);
     }
 
-    menuToState(menu: TValue[]): string[] {
-        return menu.map((button) => button);
+    menuToState(menu: TValue[]): TState {
+        return menu.map((button: string) => button) as TState;
     }
 
     onActiveButton(ctx: TCtx, activeButton: MenuOption<TValue>) {

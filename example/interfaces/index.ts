@@ -4,6 +4,7 @@ import { DefaultCtx, GenericMenu } from '../../src';
 
 export enum MenuAction {
     BASKET = 'basket',
+    BASKET_OBJECT = 'basket_object',
     VIDEO_FILTERS = 'video_filters',
     LANGUAGE = 'language',
     START = 'start',
@@ -16,6 +17,7 @@ export enum VideoFilterType {
 
 export enum FruitsFilterType {
     FRUIT = 'fruit',
+    FRUIT_OBJECT = 'fruit_object',
 }
 
 export enum LanguageType {
@@ -31,6 +33,7 @@ export interface VideoFilters {
 
 export interface Basket {
     [FruitsFilterType.FRUIT]: string[];
+    [FruitsFilterType.FRUIT_OBJECT]: Record<string, boolean>;
 }
 
 export type CurrentCtx = DefaultCtx & {

@@ -4,6 +4,7 @@ export const initSession = async <T extends CurrentCtx = CurrentCtx>(ctx: T, nex
     if (!ctx.session.basket) {
         ctx.session.basket = {
             [FruitsFilterType.FRUIT]: [],
+            [FruitsFilterType.FRUIT_OBJECT]: {},
         };
     }
 
