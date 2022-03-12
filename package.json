@@ -1,6 +1,6 @@
 {
   "name": "telegraf-menu",
-  "version": "1.7.0",
+  "version": "1.7.1",
   "author": "Dmytro Vakulenko",
   "license": "MIT",
   "description": "State-based Telegraf menus (Radio, Checkbox, Range) written with TypeScript",
