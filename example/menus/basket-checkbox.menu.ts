@@ -13,6 +13,7 @@ export const initBasketObjectMenu = (ctx: CurrentCtx) => {
             state: ctx.session.basket?.[FruitsFilterType.FRUIT_OBJECT],
             debug: true,
             replaceable: true,
+            invertedSelection: true,
             menuGetter: (menuCtx) => menuCtx.session.keyboardMenu,
             menuSetter: (menuCtx, menu) => menuCtx.session.keyboardMenu = menu,
             onSubmit(changeCtx, state) {

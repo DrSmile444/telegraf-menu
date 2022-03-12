@@ -20,7 +20,7 @@ const i18n = new I18n({
     sessionName: 'session',
 });
 
-bot.use(Telegraf.log((log) => console.log('>>> Telegraf "' + new Date().toString() + '" :' + log)));
+// bot.use(Telegraf.log((log) => console.log('>>> Telegraf "' + new Date().toString() + '" :' + log)));
 bot.use(session.middleware());
 bot.use(i18n.middleware());
 bot.use(initSession);
