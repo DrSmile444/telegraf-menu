@@ -1,6 +1,7 @@
 {
   "menu.start.start": "Добро пожаловать в тестовый проект telegraf-menu!\nВыберите следующее меню.",
   "menu.start.button.basket": "\uD83E\uDDFA Корзина",
+  "menu.start.button.basketObject": "\uD83E\uDDFA Корзина OBJ",
   "menu.start.button.videoFilters": "\uD83D\uDCFC Видео фильтр",
   "menu.start.button.language": "\uD83C\uDF0E Язык",
   "menu.basket.start": "(Checkbox) Тут ваша корзина! Выберите какие фрукты добавить!",

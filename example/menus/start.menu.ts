@@ -4,6 +4,7 @@ import { CurrentCtx, MenuAction } from '../interfaces';
 import { initBasketMenu } from './basket.menu';
 import { initLanguageMenu } from './language.menu';
 import { initVideoFiltersMenu } from './video-filters.menu';
+import { initBasketObjectMenu } from './basket-checkbox.menu';
 
 export const initStartMenu = (ctx: CurrentCtx) => {
     new RegularMenu<CurrentCtx, MenuAction>(
@@ -19,6 +20,9 @@ export const initStartMenu = (ctx: CurrentCtx) => {
                 switch (state) {
                     case MenuAction.BASKET:
                         return initBasketMenu(changeCtx);
+
+                    case MenuAction.BASKET_OBJECT:
+                        return initBasketObjectMenu(changeCtx);
 
                     case MenuAction.LANGUAGE:
                         return initLanguageMenu(changeCtx);

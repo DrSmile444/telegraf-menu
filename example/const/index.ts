@@ -28,8 +28,13 @@ export const LANGUAGE_FILTERS: MenuFilters<LanguageType> = [
     new KeyboardButton(LanguageType.UA, LanguageType.UA),
 ];
 
-export const START_MENU_FILTERS: MenuFilters<MenuAction> = [
-    new KeyboardButton('menu.start.button.basket', MenuAction.BASKET),
-    new KeyboardButton('menu.start.button.videoFilters', MenuAction.VIDEO_FILTERS),
-    new KeyboardButton('menu.start.button.language', MenuAction.LANGUAGE),
+export const START_MENU_FILTERS: MenuFilters<MenuAction>[] = [
+    [
+        new KeyboardButton('menu.start.button.basket', MenuAction.BASKET),
+        new KeyboardButton('menu.start.button.basketObject', MenuAction.BASKET_OBJECT),
+    ],
+    [
+        new KeyboardButton('menu.start.button.videoFilters', MenuAction.VIDEO_FILTERS),
+        new KeyboardButton('menu.start.button.language', MenuAction.LANGUAGE),
+    ],
 ];
