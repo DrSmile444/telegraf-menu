@@ -164,6 +164,11 @@ export abstract class GenericMenu<
         this.genericConfig.menuSetter?.(ctx, this);
     }
 
+    destroyMenu(ctx: TCtx) {
+        this.deleted = true;
+        return ctx.deleteMessage(this.messageId);
+    }
+
     protected toggleActiveButton(ctx: TCtx, activeButtons: TValue[]) {
         const newState = this.menuToState(activeButtons);
         this.activeButtons = activeButtons;
