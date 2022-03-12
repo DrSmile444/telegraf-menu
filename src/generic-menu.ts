@@ -205,7 +205,7 @@ export abstract class GenericMenu<
     }
 
     private getSubmitMessage(ctx: TCtx) {
-        return ctx.i18n?.t(this.genericConfig.submitMessage) || 'Submit';
+        return ctx.i18n?.t(this.genericConfig.submitMessage) || this.genericConfig.submitMessage || 'Submit';
     }
 
     private onAction(ctx: MenuContextUpdate<TCtx>) {
