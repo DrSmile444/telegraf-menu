@@ -3,12 +3,15 @@ import { KeyboardButton } from '../keyboard-button';
 import { CheckboxMenu } from './checkbox.menu';
 
 
+// @ts-ignore
 export class CheckboxObjectMenu<
     TCtx extends DefaultCtx = DefaultCtx,
     TState extends Record<TValue, boolean> = Record<string, boolean>,
     TValue extends string = string,
     // @ts-ignore
 > extends CheckboxMenu<TCtx, TState, TValue> {
+    private genericConfig: CheckboxConfig<TCtx, TState, TValue>;
+
     constructor(config: CheckboxConfig<TCtx, TState, TValue>) {
         super(config);
     }
@@ -20,19 +23,29 @@ export class CheckboxObjectMenu<
         const currentState: Partial<TState> = state ?? {};
         const currentStateKeys = Object.keys(currentState);
 
-        if (currentStateKeys.length) {
-            const checkboxButton = allButtons
-                .filter((button) => currentStateKeys.includes(button.value));
+        const checkboxButton = allButtons
+            .filter((button) => {
+                const isItemSelected = currentStateKeys.includes(button.value);
+                return this.genericConfig.invertedSelection ? !isItemSelected : isItemSelected;
+            });
 
-            newButtons.push(...checkboxButton);
-        }
+        newButtons.push(...checkboxButton);
 
         return newButtons.filter(Boolean);
     }
 
     menuToState(menu: TValue[]): TState {
         const state = {} as TState;
-        menu.forEach((button: string) => state[button] = true);
+
+        if (this.genericConfig.invertedSelection) {
+            this.flatFilters
+                .filter((button) => !menu.includes(button.value))
+                .map((button) => button.value)
+                .forEach((button: string) => state[button] = true);
+        } else {
+            menu.forEach((button: string) => state[button] = true);
+        }
+
         return state;
     }
 }

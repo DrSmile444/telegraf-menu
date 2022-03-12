@@ -50,7 +50,9 @@ export interface CheckboxConfig<
     TState extends string[] | Record<any, any> = string[] | Record<any, any>,
     TValue extends string = string,
     // @ts-ignore
-> extends GenericConfig<TCtx, TState, CheckboxMenu<TCtx, TState>, TValue> {}
+> extends GenericConfig<TCtx, TState, CheckboxMenu<TCtx, TState>, TValue> {
+    invertedSelection?: boolean;
+}
 
 export type MenuFilters<TValue extends string = string> = KeyboardButton<TValue>[];
 
