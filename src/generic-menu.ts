@@ -87,7 +87,7 @@ export abstract class GenericMenu<
     }
 
     constructor(
-        private genericConfig: GenericConfig<TCtx, TState>,
+        public genericConfig: GenericConfig<TCtx, TState>,
     ) {
         if (genericConfig.state) {
             this.updateState(genericConfig.state);

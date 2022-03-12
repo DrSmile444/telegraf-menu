@@ -14,6 +14,9 @@ export const initBasketObjectMenu = (ctx: CurrentCtx) => {
             debug: true,
             replaceable: true,
             invertedSelection: true,
+            formatting: {
+                disabled: '⛔️',
+            },
             menuGetter: (menuCtx) => menuCtx.session.keyboardMenu,
             menuSetter: (menuCtx, menu) => menuCtx.session.keyboardMenu = menu,
             onSubmit(changeCtx, state) {

@@ -10,7 +10,11 @@ export class CheckboxMenu<
     TValue extends string = string,
 > extends GenericMenu<TCtx, TState, TValue> {
     constructor(private config: CheckboxConfig<TCtx, TState, TValue>) {
-        super(config);
+        // @ts-ignore
+        super({
+            ...config,
+            formatting: Object.assign(FORMATTING_EMOJIS.CHECKBOX_FORMATTING, config.formatting ?? {}),
+        });
     }
 
     stateToMenu(state: TState) {
@@ -60,11 +64,10 @@ export class CheckboxMenu<
     }
 
     formatButtonLabel(ctx: TCtx, button: KeyboardButton<TValue>) {
-        const {CHECKBOX_FORMATTING} = FORMATTING_EMOJIS;
         const {label, isActiveButton} = super.getButtonLabelInfo(ctx, button);
 
         return isActiveButton ?
-            CHECKBOX_FORMATTING.active + ' ' + label :
-            CHECKBOX_FORMATTING.disabled + ' ' + label;
+            this.genericConfig.formatting.active + ' ' + label :
+            this.genericConfig.formatting.disabled + ' ' + label;
     }
 }

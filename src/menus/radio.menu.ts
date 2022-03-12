@@ -10,7 +10,10 @@ export class RadioMenu<
     TValue extends string = string,
     > extends GenericMenu<TCtx, TState, TValue> {
     constructor(private config: RadioConfig<TCtx, TState, TValue>) {
-        super(config);
+        super({
+            ...config,
+            formatting: Object.assign(FORMATTING_EMOJIS.RADIO_FORMATTING, config.formatting ?? {}),
+        });
     }
 
     stateToMenu(state: string): KeyboardButton<TValue>[] {
@@ -33,7 +36,6 @@ export class RadioMenu<
     }
 
     formatButtonLabel(ctx: TCtx, button: KeyboardButton<TValue>) {
-        const {RADIO_FORMATTING} = FORMATTING_EMOJIS;
         const {label, isDefaultActiveButton, isActiveButton} = super.getButtonLabelInfo(ctx, button);
         const activeButtonIndex = this.flatFilters.findIndex((allButton) => button.value === allButton.value);
         const firstButtonIndex = this.flatFilters.findIndex((allButton) => allButton.isDefault);
@@ -41,7 +43,7 @@ export class RadioMenu<
         const isFirstDefault = firstButtonIndex === activeButtonIndex;
 
         return isActiveButton || (isDefaultActiveButton && isFirstDefault) ?
-            RADIO_FORMATTING.active + ' ' + label :
-            RADIO_FORMATTING.disabled + ' ' + label;
+            this.genericConfig.formatting.active + ' ' + label :
+            this.genericConfig.formatting.disabled + ' ' + label;
     }
 }
